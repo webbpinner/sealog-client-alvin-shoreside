@@ -1,0 +1,8 @@
+/node_modules
+npm-debug.log
+.DS_Store
+/dist/fonts
+/dist/main.bundle.js
+/src/client_config.js
+package-lock.json
+webpack.config.js
