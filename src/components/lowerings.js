@@ -125,7 +125,7 @@ class Lowerings extends Component {
 
         let loweringLocation = (lowering.lowering_location)? <span>Location: {lowering.lowering_location}<br/></span> : null
         let loweringPilot = (lowering.lowering_additional_meta.lowering_pilot)? <span>Pilot: {lowering.lowering_additional_meta.lowering_pilot}<br/></span> : null
-        let loweringObservers = (lowering.lowering_additional_meta.lowering_observers && this.props.lowering.lowering_additional_meta.lowering_observers.length > 0)? <span>Observers: {lowering.lowering_additional_meta.lowering_observers.join(", ")}<br/></span> : null
+        let loweringObservers = (lowering.lowering_additional_meta.lowering_observers && lowering.lowering_additional_meta.lowering_observers.length > 0)? <span>Observers: {lowering.lowering_additional_meta.lowering_observers.join(", ")}<br/></span> : null
 
         return (
           <tr key={lowering.id}>
