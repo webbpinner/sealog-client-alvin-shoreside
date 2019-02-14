@@ -113,7 +113,7 @@ class CruiseMenu extends Component {
       let loweringDescription = (this.props.lowering.lowering_additional_meta.lowering_description)? <p><strong>Description:</strong> {this.props.lowering.lowering_additional_meta.lowering_description}</p> : null
       let loweringLocation = (this.props.lowering.lowering_location)? <p><strong>Location:</strong> {this.props.lowering.lowering_location}</p> : null
       let loweringPilot = (this.props.lowering.lowering_additional_meta.lowering_pilot)? <p><strong>Pilot:</strong> {this.props.lowering.lowering_additional_meta.lowering_pilot}</p> : null
-      let loweringObservers = (this.props.lowering.lowering_additional_meta.lowering_observers)? <p><strong>Observers:</strong> {this.props.lowering.lowering_additional_meta.lowering_observers.join(", ")}</p> : null
+      let loweringObservers = (this.props.lowering.lowering_additional_meta.lowering_observers && this.props.lowering.lowering_additional_meta.lowering_observers.length > 0)? <p><strong>Observers:</strong> {this.props.lowering.lowering_additional_meta.lowering_observers.join(", ")}</p> : null
       let lowering_files = (this.props.lowering.lowering_additional_meta.lowering_files && this.props.lowering.lowering_additional_meta.lowering_files.length > 0)? this.renderLoweringFiles(this.props.lowering.id, this.props.lowering.lowering_additional_meta.lowering_files): null
 
       return (          
