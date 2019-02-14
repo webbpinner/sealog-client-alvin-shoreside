@@ -1,5 +1,5 @@
 # sealog-client-alvin-shoreside
-React-Redux based front-end to the Sealog event reviewing server customized to support the ALVIN HOV
+React-Redux based front-end to the shore-side version of the Sealog event reviewing server customized to support the ALVIN HOV
 
 For installation instruction please look at [INSTALL.md](./INSTALL.md)
 
@@ -8,7 +8,7 @@ For installation instruction please look at [INSTALL.md](./INSTALL.md)
 - admin account for demo: admin:password
 - guest account for demo: guest:<no password>
 
-**sealog-client-alvin-shoreside** is based off [sealog-client](https://github.com/webbpinner/sealog-client-shoreside)
+**sealog-client-alvin-shoreside** is based off [sealog-client-shoreside](https://github.com/webbpinner/sealog-client-shoreside)
 
 # Current Users
 Sealog-alvin-shoreside is currently in-use with the Alvin HOV operated by the Woods Hole Oceanographic Institution.

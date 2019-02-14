@@ -384,7 +384,7 @@ function validate(formProps) {
 
 function mapStateToProps(state) {
 
-  let initialValues = state.lowering.lowering
+  let initialValues = { ...state.lowering.lowering }
 
   if (initialValues.lowering_additional_meta) {
 

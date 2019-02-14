@@ -3,13 +3,13 @@
 ### Prerequisites
 
 <<<<<<< HEAD
- - [sealog-server-alvin-shoreside](https://github.com/webbpinner/sealog-server-alvin-shoreside)
+ - [sealog-server-jason-shoreside](https://github.com/webbpinner/sealog-server-jason-shoreside)
  - [nodeJS](https://nodejs.org)
  - [npm](https://www.npmjs.com)
  - [git](https://git-scm.com)
  
 #### Installing NodeJS/npm on Ubuntu 16.04LTS
-The standard Ubuntu repositories for Ubuntu 16.04 only provide install packages for NodeJS v4.  Sealog-client-alvin-shoreside (and Sealog-Server-Alvin-Shoreside) require nodeJS >= v8.7
+The standard Ubuntu repositories for Ubuntu 16.04 only provide install packages for NodeJS v4.  sealog-client-alvin-shoreside (and sealog-server-jason-shoreside) require nodeJS >= v8.11
  
 To install nodeJS v8.11 on Ubuntu 16.04LTS run the following commands:
  ```
