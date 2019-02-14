@@ -17,7 +17,26 @@ class CreateLowering extends Component {
 
   handleFormSubmit(formProps) {
     formProps.lowering_tags = (formProps.lowering_tags)? formProps.lowering_tags.map(tag => tag.trim()): [];
-    formProps.lowering_observers = (formProps.lowering_observers)? formProps.lowering_observers.map(observer => observer.trim()): [];
+ 
+    formProps.lowering_additional_meta = {}
+
+    if(formProps.lowering_description) {
+      formProps.lowering_additional_meta.lowering_description = formProps.lowering_description
+      delete formProps.lowering_description
+    }
+
+    if(formProps.lowering_pilot) {
+      formProps.lowering_additional_meta.lowering_pilot = formProps.lowering_pilot
+      delete formProps.lowering_pilot
+    }
+
+    if(formProps.lowering_observers) {
+      if(formProps.lowering_observers.length > 0) {
+        formProps.lowering_additional_meta.lowering_observers = formProps.lowering_observers.map(tag => tag.trim());
+      }
+      delete formProps.lowering_observers
+    }
+
     this.props.createLowering(formProps);
   }
 

@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Button, Row, Col, Panel, PanelGroup, ListGroup, ListGroupItem } from 'react-bootstrap';
 import FileDownload from 'js-file-download';
-import { API_ROOT_URL } from '../client_config';
+import { API_ROOT_URL, MAIN_SCREEN_TXT } from '../client_config';
 
 import * as actions from '../actions';
 
@@ -110,15 +110,21 @@ class CruiseMenu extends Component {
   renderLoweringPanel() {
 
     if(this.props.lowering.id){
-      let lowering_files = (this.props.lowering.lowering_files && this.props.lowering.lowering_files.length > 0)? this.renderLoweringFiles(this.props.lowering.id, this.props.lowering.lowering_files): null
+      let loweringDescription = (this.props.lowering.lowering_additional_meta.lowering_description)? <p><strong>Description:</strong> {this.props.lowering.lowering_additional_meta.lowering_description}</p> : null
+      let loweringLocation = (this.props.lowering.lowering_location)? <p><strong>Location:</strong> {this.props.lowering.lowering_location}</p> : null
+      let loweringPilot = (this.props.lowering.lowering_additional_meta.lowering_pilot)? <p><strong>Pilot:</strong> {this.props.lowering.lowering_additional_meta.lowering_pilot}</p> : null
+      let loweringObservers = (this.props.lowering.lowering_additional_meta.lowering_observers)? <p><strong>Observers:</strong> {this.props.lowering.lowering_additional_meta.lowering_observers.join(", ")}</p> : null
+      let lowering_files = (this.props.lowering.lowering_additional_meta.lowering_files && this.props.lowering.lowering_additional_meta.lowering_files.length > 0)? this.renderLoweringFiles(this.props.lowering.id, this.props.lowering.lowering_additional_meta.lowering_files): null
 
       return (          
         <Panel>
           <Panel.Heading>{"Lowering: " + this.props.lowering.lowering_id}</Panel.Heading>
           <Panel.Body>
-            <p><strong>Description:</strong> {this.props.lowering.lowering_description}</p>
-            <p><strong>Location:</strong> {this.props.lowering.lowering_location}</p>
+            {loweringDescription}
+            {loweringLocation}
             <p><strong>Date:</strong> {moment.utc(this.props.lowering.start_ts).format("YYYY/MM/DD HH:mm")} - {moment.utc(this.props.lowering.stop_ts).format("YYYY/MM/DD HH:mm")}</p>
+            {loweringPilot}
+            {loweringObservers}
             {lowering_files}
             <Button bsSize={'sm'} bsStyle={'primary'} onClick={ () => this.handleLoweringSelectForReplay(this.props.lowering.id) }>Goto replay...</Button>
             <Button bsSize={'sm'} bsStyle={'primary'} onClick={ () => this.handleLoweringSelectForSearch(this.props.lowering.id) }>Goto review...</Button>
@@ -130,13 +136,8 @@ class CruiseMenu extends Component {
 
 
   renderLoweringList(start_ts, stop_ts) {
-    // console.log("lowerings:", this.props.lowerings);
-    // console.log("lowering start:", this.props.lowerings[0].start_ts);
-    // console.log("cruise start:", start_ts);
-    // console.log("cruise stop:", stop_ts);
 
     let cruiseLowerings = this.props.lowerings.filter(lowering => moment.utc(lowering.start_ts).isBetween(start_ts, stop_ts) )
-    // console.log(cruiseLowerings)
     return cruiseLowerings
   }
 
@@ -147,15 +148,19 @@ class CruiseMenu extends Component {
 
       let cruise_files = (cruise.cruise_files && cruise.cruise_files.length > 0)? this.renderCruiseFiles(cruise.id, cruise.cruise_files): null
 
+      let cruiseName = (cruise.cruise_additional_meta.cruise_name)? <p><strong>Cruise Name:</strong> {cruise.cruise_additional_meta.cruise_name}</p> : null
+      let cruiseLocation = (cruise.cruise_location)? <p><strong>Location:</strong> {cruise.cruise_location}</p> : null
+      let cruiseDescription = (cruise.cruise_additional_meta.cruise_description)? <p><strong>Description:</strong> {cruise.cruise_additional_meta.cruise_description}</p> : null
+
       return (          
         <Panel key={`panel_${index}`} eventKey={index.toString()}>
           <Panel.Heading><Panel.Title toggle>{"Cruise: " + cruise.cruise_id}</Panel.Title></Panel.Heading>
           <Panel.Body collapsible>
-            <p><strong>Cruise Name:</strong> {cruise.cruise_name}</p>
-            <p><strong>Chief Scientist:</strong> {cruise.cruise_pi}</p>
-            <p><strong>Location:</strong> {cruise.cruise_location}</p>
-            <p><strong>Description:</strong> {cruise.cruise_description}</p>
+            {cruiseName}
+            {cruiseDescription}
+            {cruiseLocation}
             <p><strong>Dates:</strong> {moment.utc(cruise.start_ts).format("YYYY/MM/DD")} - {moment.utc(cruise.stop_ts).format("YYYY/MM/DD")}</p>
+            <p><strong>Chief Scientist:</strong> {cruise.cruise_pi}</p>
             {cruise_files}
             { (cruiseLowerings.length > 0)? (
               <div>
@@ -204,7 +209,8 @@ class CruiseMenu extends Component {
         <Row>
           <Col xs={12}>
             <h4>Welcome to Sealog</h4>
-            Sealog provides the NDSF user community with shore-based access to in-situ observations, still imagery, position/attitude data, and sensor data from the ALVIN HOV for review and analysis<br/><br/>
+            {MAIN_SCREEN_TXT}
+            <br/><br/>
           </Col>
         </Row>
         <Row>

@@ -48,9 +48,29 @@ class UpdateLowering extends Component {
 
   handleFormSubmit(formProps) {
     formProps.lowering_tags = (formProps.lowering_tags)? formProps.lowering_tags.map(tag => tag.trim()): [];
-    formProps.lowering_observers = (formProps.lowering_observers)? formProps.lowering_observers.map(observer => observer.trim()): [];
 
-    this.props.updateLowering({...formProps, lowering_files: this.pond.getFiles().map(file => file.serverId)});
+    formProps.lowering_additional_meta = {}
+
+    if(formProps.lowering_description) {
+      formProps.lowering_additional_meta.lowering_description = formProps.lowering_description
+      delete formProps.lowering_description
+    }
+
+    if(formProps.lowering_pilot) {
+      formProps.lowering_additional_meta.lowering_pilot = formProps.lowering_pilot
+      delete formProps.lowering_pilot
+    }
+
+    if(formProps.lowering_observers) {
+      if(formProps.lowering_observers.length > 0) {
+        formProps.lowering_additional_meta.lowering_observers = formProps.lowering_observers.map(tag => tag.trim());
+      }
+      delete formProps.lowering_observers
+    }
+
+    formProps.lowering_additional_meta.lowering_files = this.pond.getFiles().map(file => file.serverId)
+
+    this.props.updateLowering({...formProps});
     this.pond.removeFiles();
     this.props.handleFormSubmit()
   }
@@ -177,8 +197,8 @@ class UpdateLowering extends Component {
   }
 
   renderFiles() {
-    if(this.props.lowering.lowering_files && this.props.lowering.lowering_files.length > 0) {
-      let files = this.props.lowering.lowering_files.map((file, index) => {
+    if(this.props.lowering.lowering_additional_meta && this.props.lowering.lowering_additional_meta.lowering_files && this.props.lowering.lowering_additional_meta.lowering_files.length > 0) {
+      let files = this.props.lowering.lowering_additional_meta.lowering_files.map((file, index) => {
         return <li style={{ listStyleType: "none" }} key={`file_${index}`}><span onClick={() => this.handleFileDownload(this.props.lowering.id, file)}><FontAwesomeIcon className='text-primary' icon='download' fixedWidth /></span> <span onClick={() => this.handleFileDelete(this.props.lowering.id, file)}><FontAwesomeIcon className='text-danger' icon='trash' fixedWidth /></span><span> {file}</span></li>
       })
       return <div>{files}<br/></div>
@@ -243,15 +263,15 @@ class UpdateLowering extends Component {
               />
               <Field
                 name="lowering_pilot"
-                component={this.renderField}
                 type="text"
+                component={this.renderField}
                 label="Lowering Pilot"
                 placeholder="i.e. Bruce Strickrott"
               />
               <Field
-                name="lowering_Observers"
-                component={this.renderField}
+                name="lowering_observers"
                 type="text"
+                component={this.renderField}
                 label="Lowering Observers, comma delimited"
                 placeholder="i.e. Adam Soule, Masako Tominaga"
               />
@@ -342,19 +362,19 @@ function validate(formProps) {
     }
   }
 
-  if (typeof formProps.lowering_observers == "string") {
-    if (formProps.lowering_observers == '') {
-      formProps.lowering_observers = []
-    } else {
-      formProps.lowering_observers = formProps.lowering_observers.split(',');
-    }
-  }
-
   if (typeof formProps.lowering_tags == "string") {
     if (formProps.lowering_tags == '') {
       formProps.lowering_tags = []
     } else {
       formProps.lowering_tags = formProps.lowering_tags.split(',');
+    }
+  }
+
+  if (typeof formProps.lowering_observers == "string") {
+    if (formProps.lowering_observers == '') {
+      formProps.lowering_observers = []
+    } else {
+      formProps.lowering_observers = formProps.lowering_observers.split(',');
     }
   }
 
@@ -364,10 +384,29 @@ function validate(formProps) {
 
 function mapStateToProps(state) {
 
+  let initialValues = state.lowering.lowering
+
+  if (initialValues.lowering_additional_meta) {
+
+    if (initialValues.lowering_additional_meta.lowering_description) {
+      initialValues.lowering_description = initialValues.lowering_additional_meta.lowering_description
+    }
+
+    if (initialValues.lowering_additional_meta.lowering_pilot) {
+      initialValues.lowering_pilot = initialValues.lowering_additional_meta.lowering_pilot
+    }
+
+    if (initialValues.lowering_additional_meta.lowering_observers) {
+      initialValues.lowering_observers = initialValues.lowering_additional_meta.lowering_observers
+    }
+
+    delete initialValues.lowering_additional_meta
+  }
+
   return {
     errorMessage: state.lowering.lowering_error,
     message: state.lowering.lowering_message,
-    initialValues: state.lowering.lowering,
+    initialValues: initialValues,
     lowering: state.lowering.lowering,
     roles: state.user.profile.roles
   };
