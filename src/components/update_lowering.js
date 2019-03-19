@@ -80,7 +80,8 @@ class UpdateLowering extends Component {
     {
       headers: {
         authorization: cookies.get('token')
-      }
+      },
+      responseType: arraybuffer
     })
     .then((response) => {
         FileDownload(response.data, filename);
