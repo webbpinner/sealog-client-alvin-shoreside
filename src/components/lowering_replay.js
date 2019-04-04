@@ -373,7 +373,7 @@ class LoweringReplay extends Component {
           </Row>
         )
       } else {
-        let frameGrabberData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == 'framegrabber')
+        let frameGrabberData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == 'vehicleRealtimeFramegrabberData')
         let tmpData = []
 
         if(frameGrabberData.length > 0) {
@@ -459,7 +459,7 @@ class LoweringReplay extends Component {
     let alvin_z = 'n/a'
 
     if(this.props.event && this.props.event.selected_event.aux_data) {
-      let alvinRealtimeAlvinCoordData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
+      let alvinRealtimeAlvinCoordData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeAlvinCoordData")
       if(alvinRealtimeAlvinCoordData.length > 0) {
         let xObj = alvinRealtimeAlvinCoordData[0].data_array.filter(data => data.data_name == "alvin_x")
         alvin_x = (xObj.length > 0)? `${xObj[0].data_value} ${xObj[0].data_uom}` : 'n/a'

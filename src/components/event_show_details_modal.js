@@ -97,7 +97,7 @@ class EventShowDetailsModal extends Component {
           </Row>
         )
       } else {
-        let frameGrabberData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == 'framegrabber')
+        let frameGrabberData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == 'vehicleRealtimeFramegrabberData')
         let tmpData = []
 
         if(frameGrabberData.length > 0) {
