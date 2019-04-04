@@ -15,7 +15,7 @@ import * as actions from '../actions';
 
 let fileDownload = require('js-file-download');
 
-const maxCruisesPerPage = 15
+const maxCruisesPerPage = 8
 
 class Cruises extends Component {
 
@@ -150,7 +150,7 @@ class Cruises extends Component {
         <Table responsive bordered striped>
           <thead>
             <tr>
-              <th>Cruise</th>
+              <th>Cruise ID</th>
               <th>Details</th>
               <th>Actions</th>
             </tr>
@@ -205,7 +205,7 @@ class Cruises extends Component {
           if (i - l === 2) {
             rangeWithDots.push(<Pagination.Item key={l + 1} active={(this.state.activePage === l+1)} onClick={() => this.setState({activePage: (l + 1)})}>{l + 1}</Pagination.Item>)
           } else if (i - l !== 1) {
-            rangeWithDots.push(<Pagination.Ellipsis />);
+            rangeWithDots.push(<Pagination.Ellipsis key={`ellipsis_${i}`}/>);
           }
         }
         rangeWithDots.push(<Pagination.Item key={i} active={(this.state.activePage === i)} onClick={() => this.setState({activePage: i})}>{i}</Pagination.Item>);

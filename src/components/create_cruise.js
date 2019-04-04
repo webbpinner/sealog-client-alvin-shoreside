@@ -181,7 +181,7 @@ class CreateCruise extends Component {
                   component={this.renderTextArea}
                   type="textarea"
                   label="Cruise Description"
-                  placeholder="A brief summary of the cruise"
+                  placeholder="i.e. A brief summary of the cruise"
                   rows={10}
                 />
                 <Field
@@ -218,14 +218,14 @@ class CreateCruise extends Component {
                   component={this.renderTextArea}
                   type="textarea"
                   label="Cruise Participants, comma delimited"
-                  placeholder="A comma-delimited list of names, i.e. Dave Butterfield,Sharon Walker"
+                  placeholder="i.e. Dave Butterfield,Sharon Walker"
                 />
                 <Field
                   name="cruise_tags"
                   component={this.renderTextArea}
                   type="textarea"
                   label="Cruise Tags, comma delimited"
-                  placeholder="A comma-delimited list of tags, i.e. coral,chemistry,engineering"
+                  placeholder="i.e. coral,chemistry,engineering"
                 />
                 {this.renderAlert()}
                 {this.renderMessage()}

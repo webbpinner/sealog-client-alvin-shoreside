@@ -54,11 +54,15 @@ class UpdateLowering extends Component {
     if(formProps.lowering_description) {
       formProps.lowering_additional_meta.lowering_description = formProps.lowering_description
       delete formProps.lowering_description
+    } else {
+      formProps.lowering_additional_meta.lowering_description = ''
     }
 
     if(formProps.lowering_pilot) {
       formProps.lowering_additional_meta.lowering_pilot = formProps.lowering_pilot
       delete formProps.lowering_pilot
+    } else {
+      formProps.lowering_additional_meta.lowering_pilot = ''
     }
 
     if(formProps.lowering_observers) {
@@ -66,6 +70,8 @@ class UpdateLowering extends Component {
         formProps.lowering_additional_meta.lowering_observers = formProps.lowering_observers.map(tag => tag.trim());
       }
       delete formProps.lowering_observers
+    } else {
+      formProps.lowering_additional_meta.lowering_observers = []
     }
 
     formProps.lowering_additional_meta.lowering_files = this.pond.getFiles().map(file => file.serverId)
@@ -81,7 +87,7 @@ class UpdateLowering extends Component {
       headers: {
         authorization: cookies.get('token')
       },
-      responseType: arraybuffer
+      responseType: 'arraybuffer'
     })
     .then((response) => {
         FileDownload(response.data, filename);
@@ -104,6 +110,14 @@ class UpdateLowering extends Component {
     .catch((error)=>{
       console.log("JWT is invalid, logging out");
     });
+  }
+
+  renderHiddenField({ input }) {
+    return (
+      <FormGroup>
+        <FormControl {...input} type="hidden"/>
+      </FormGroup>
+    )
   }
 
   renderField({ input, label, placeholder, required, type, meta: { touched, error, warning } }) {
@@ -239,6 +253,10 @@ class UpdateLowering extends Component {
           <Panel.Heading>{updateLoweringFormHeader}</Panel.Heading>
           <Panel.Body>
             <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
+              <Field
+                name="lowering_additional_meta"
+                component={this.renderHiddenField}
+              />
               <Field
                 name="lowering_id"
                 component={this.renderField}
@@ -401,7 +419,7 @@ function mapStateToProps(state) {
       initialValues.lowering_observers = initialValues.lowering_additional_meta.lowering_observers
     }
 
-    delete initialValues.lowering_additional_meta
+    // delete initialValues.lowering_additional_meta
   }
 
   return {

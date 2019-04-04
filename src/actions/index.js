@@ -637,6 +637,8 @@ export function updateCruise(formProps) {
 
   if(formProps.cruise_location) {
     fields.cruise_location = formProps.cruise_location;
+  } else {
+    fields.cruise_location = '';
   }
 
   if(formProps.cruise_pi) {
@@ -645,6 +647,8 @@ export function updateCruise(formProps) {
 
   if(formProps.cruise_tags) {
     fields.cruise_tags = formProps.cruise_tags;
+  } else {
+    fields.cruise_tags = [];
   }
 
   if(formProps.start_ts) {
@@ -713,10 +717,14 @@ export function updateLowering(formProps) {
 
   if(formProps.lowering_location) {
     fields.lowering_location = formProps.lowering_location;
+  } else {
+    fields.lowering_location = ''
   }
 
   if(formProps.lowering_tags) {
     fields.lowering_tags = formProps.lowering_tags;
+  } else {
+    fields.lowering_tags = []
   }
 
   if(formProps.start_ts) {

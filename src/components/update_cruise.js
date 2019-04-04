@@ -49,21 +49,25 @@ class UpdateCruise extends Component {
   handleFormSubmit(formProps) {
     formProps.cruise_tags = (formProps.cruise_tags)? formProps.cruise_tags.map(tag => tag.trim()): [];
 
-    formProps.cruise_additional_meta = {}
-
     if(formProps.cruise_participants) {
       formProps.cruise_additional_meta.cruise_participants = formProps.cruise_participants.map(participant => participant.trim())
       delete formProps.cruise_participants
+    } else {
+      formProps.cruise_additional_meta.cruise_participants = []
     }
 
     if(formProps.cruise_name) {
       formProps.cruise_additional_meta.cruise_name = formProps.cruise_name
       delete formProps.cruise_name
+    } else {
+      formProps.cruise_additional_meta.cruise_name = ''
     }
 
     if(formProps.cruise_description) {
       formProps.cruise_additional_meta.cruise_description = formProps.cruise_description
       delete formProps.cruise_description
+    } else {
+      formProps.cruise_additional_meta.cruise_description = ''
     }
 
     formProps.cruise_additional_meta.cruise_files = this.pond.getFiles().map(file => file.serverId)
@@ -79,7 +83,7 @@ class UpdateCruise extends Component {
       headers: {
         authorization: cookies.get('token')
       },
-      responseType: arraybuffer
+      responseType: 'arraybuffer'
     })
     .then((response) => {
         FileDownload(response.data, filename);
@@ -102,6 +106,14 @@ class UpdateCruise extends Component {
     .catch((error)=>{
       console.log("JWT is invalid, logging out");
     });
+  }
+
+  renderHiddenField({ input }) {
+    return (
+      <FormGroup>
+        <FormControl {...input} type="hidden"/>
+      </FormGroup>
+    )
   }
 
   renderField({ input, label, placeholder, required, type, meta: { touched, error, warning } }) {
@@ -237,6 +249,10 @@ class UpdateCruise extends Component {
           <Panel.Body>
             <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
               <Field
+                name="cruise_additional_meta"
+                component={this.renderHiddenField}
+              />
+              <Field
                 name="cruise_id"
                 component={this.renderField}
                 type="text"
@@ -287,6 +303,7 @@ class UpdateCruise extends Component {
                 type="text"
                 label="Primary Investigator"
                 placeholder="i.e. Dr. Susan Lang"
+                required={true}
               />
               <Field
                 name="cruise_participants"
@@ -404,7 +421,7 @@ function mapStateToProps(state) {
       initialValues.cruise_participants = initialValues.cruise_additional_meta.cruise_participants
     }
 
-    delete initialValues.cruise_additional_meta
+    // delete initialValues.cruise_additional_meta
   }
 
   return {
