@@ -79,7 +79,7 @@ class EventShowDetailsModal extends Component {
 
         for (let i = 0; i < this.state.event.event_options.length; i++) {
           if (this.state.event.event_options[i].event_option_name == "filename") {
-            tmpData.push({source: "SuliusCam", filepath: API_ROOT_URL + IMAGE_PATH + '/SuliusCam/' + this.state.event.event_options[i].event_option_value} )
+            tmpData.push({source: "SuliusCam", filepath: API_ROOT_URL + IMAGE_PATH + this.state.event.event_options[i].event_option_value} )
           } 
         }
 
@@ -103,7 +103,7 @@ class EventShowDetailsModal extends Component {
         if(frameGrabberData.length > 0) {
           for (let i = 0; i < frameGrabberData[0].data_array.length; i+=2) {
       
-            tmpData.push({source: frameGrabberData[0].data_array[i].data_value, filepath: API_ROOT_URL + IMAGE_PATH + '/' + frameGrabberData[0].data_array[i+1].data_value.split('/').pop()} )
+            tmpData.push({source: frameGrabberData[0].data_array[i].data_value, filepath: API_ROOT_URL + IMAGE_PATH + frameGrabberData[0].data_array[i+1].data_value} )
           }
 
           return (
@@ -111,7 +111,7 @@ class EventShowDetailsModal extends Component {
               {
                 tmpData.map((camera) => {
                   return (
-                    <Col key={camera.source} xs={12} sm={6} md={3} lg={3}>
+                    <Col key={camera.source} xs={12} sm={6} md={4} lg={4}>
                       {this.renderImage(camera.source, camera.filepath)}
                     </Col>
                   )
@@ -123,23 +123,6 @@ class EventShowDetailsModal extends Component {
       }
     }
   }
-
-  // renderSciCamPanel() {
-  //   if(this.props.event && this.state.event.event_value == 'SCICAM') {
-
-  //     let sciCamData = this.state.event.event_options.filter(event_option => event_option.event_option_name == 'filepath')
-
-  //     if(sciCamData.length > 0) {
-  //       return (
-  //         <Row>
-  //           <Col key='sciCamImage' xs={6} sm={6} md={3} lg={3}>
-  //             {this.renderImage("SciCAM", IMAGE_PATH + '/SCICAM_Images/' + sciCamData[0].event_option_value.split('/').pop())}
-  //           </Col>
-  //         </Row>
-  //       )
-  //     }
-  //   }
-  // }
 
   renderNavLatLonPanel() {
 
@@ -253,12 +236,6 @@ class EventShowDetailsModal extends Component {
         return filtered
       }, [])
       
-              // <Row>
-                // <Col xs={12}>
-                  // {this.renderSciCamPanel()}
-                // </Col>
-              // </Row>
-
       return (
         <Modal bsSize="large" show={show} onHide={handleHide}>
             <ImagePreviewModal />;

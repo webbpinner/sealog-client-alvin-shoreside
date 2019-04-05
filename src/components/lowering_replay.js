@@ -400,23 +400,6 @@ class LoweringReplay extends Component {
     }
   }
 
-  renderSciCamPanel() {
-    if(this.props.event && this.props.event.selected_event.event_value == 'SCICAM') {
-
-      let sciCamData = this.props.event.selected_event.event_options.filter(event_option => event_option.event_option_name == 'filepath')
-
-      if(sciCamData.length > 0) {
-        return (
-          <Row>
-            <Col key='sciCamImage' xs={6} sm={3} md={3} lg={3}>
-              {this.renderImage("SciCAM", IMAGE_PATH + '/SCICAM_Images/' + sciCamData[0].event_option_value.split('/').pop())}
-            </Col>
-          </Row>
-        )
-      }
-    }
-  }
-
   renderNavLatLonPanel() {
 
     let latitude = 'n/a'
@@ -799,11 +782,6 @@ class LoweringReplay extends Component {
         <Row>
           <Col sm={12}>
             {this.renderImageryPanel()}
-          </Col>
-        </Row>
-        <Row>
-          <Col sm={12}>
-            {this.renderSciCamPanel()}
           </Col>
         </Row>
         <Row>
