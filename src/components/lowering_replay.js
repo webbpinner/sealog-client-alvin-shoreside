@@ -355,7 +355,7 @@ class LoweringReplay extends Component {
 
         for (let i = 0; i < this.props.event.selected_event.event_options.length; i++) {
           if (this.props.event.selected_event.event_options[i].event_option_name == "filename") {
-            tmpData.push({source: "SuliusCam", filepath: API_ROOT_URL + IMAGE_PATH + '/SuliusCam/' + this.props.event.selected_event.event_options[i].event_option_value} )
+            tmpData.push({source: "SuliusCam", filepath: API_ROOT_URL + IMAGE_PATH + '/' + this.props.lowering.lowering_id +  '/SuliusCam/' + this.props.event.selected_event.event_options[i].event_option_value} )
           } 
         }
 
@@ -379,7 +379,7 @@ class LoweringReplay extends Component {
         if(frameGrabberData.length > 0) {
           for (let i = 0; i < frameGrabberData[0].data_array.length; i+=2) {
       
-            tmpData.push({source: frameGrabberData[0].data_array[i].data_value, filepath: API_ROOT_URL + IMAGE_PATH + '/' + frameGrabberData[0].data_array[i+1].data_value.split('/').pop()} )
+            tmpData.push({source: frameGrabberData[0].data_array[i].data_value, filepath: API_ROOT_URL + IMAGE_PATH + frameGrabberData[0].data_array[i+1].data_value} )
           }
 
           return (
