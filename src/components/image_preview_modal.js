@@ -33,7 +33,7 @@ class ImagePreviewModal extends Component {
     return (
       <Modal bsSize="large" show={show} onHide={handleHide}>
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.filepath}</Modal.Title>
+          <Modal.Title>{this.props.filepath.split('/').pop()}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
