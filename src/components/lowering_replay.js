@@ -387,7 +387,7 @@ class LoweringReplay extends Component {
               {
                 tmpData.map((camera) => {
                   return (
-                    <Col key={camera.source} xs={6} sm={3} md={3} lg={3}>
+                    <Col key={camera.source} xs={6} sm={4} md={4} lg={4}>
                       {this.renderImage(camera.source, camera.filepath)}
                     </Col>
                   )
