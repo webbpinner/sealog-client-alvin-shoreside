@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button, Checkbox, Row, Col, Thumbnail, ControlLabel, ListGroup, ListGroupItem, FormGroup, FormControl, FormGroupItem, Modal, Well } from 'react-bootstrap';
+import { Button, Checkbox, Row, Col, Thumbnail, ControlLabel, ListGroup, ListGroupItem, FormGroup, FormControl, FormGroupItem, Panel, Modal, Well } from 'react-bootstrap';
 import { connectModal } from 'redux-modal';
 import { LinkContainer } from 'react-router-bootstrap';
 import Datetime from 'react-datetime';
@@ -131,7 +131,7 @@ class EventShowDetailsModal extends Component {
     let depth = 'n/a'
     let altitude = 'n/a'
 
-    if(this.props.event && this.state.event.aux_data) {
+    if(this.props.event && this.state.event.aux_data) { 
       let vehicleRealtimeNavData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
       if(vehicleRealtimeNavData.length > 0) {
         let latObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "latitude")
@@ -150,12 +150,15 @@ class EventShowDetailsModal extends Component {
     }  
 
     return (
-      <ListGroup>
-        <ListGroupItem>Lat:<span className="pull-right">{`${latitude}`}</span></ListGroupItem>
-        <ListGroupItem>Lng:<span className="pull-right">{`${longitude}`}</span></ListGroupItem>
-        <ListGroupItem>Depth:<span className="pull-right">{`${depth}`}</span></ListGroupItem>
-        <ListGroupItem>Alt:<span className="pull-right">{`${altitude}`}</span></ListGroupItem>
-      </ListGroup>
+      <Panel>
+        <Panel.Heading>Realtime Navigation</Panel.Heading>
+        <Panel.Body>
+          Lat:<span className="pull-right">{`${latitude}`}</span><br/>
+          Lng:<span className="pull-right">{`${longitude}`}</span><br/>
+          Depth:<span className="pull-right">{`${depth}`}</span><br/>
+          Alt:<span className="pull-right">{`${altitude}`}</span><br/>
+        </Panel.Body>
+      </Panel>
     );
   }
 
@@ -165,7 +168,7 @@ class EventShowDetailsModal extends Component {
     let alvin_y = 'n/a'
     let alvin_z = 'n/a'
 
-    if(this.props.event && this.state.event.aux_data) {
+    if(this.props.event && this.state.event.aux_data) { 
       let alvinRealtimeAlvinCoordData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeAlvinCoordData")
       if(alvinRealtimeAlvinCoordData.length > 0) {
         let xObj = alvinRealtimeAlvinCoordData[0].data_array.filter(data => data.data_name == "alvin_x")
@@ -181,11 +184,14 @@ class EventShowDetailsModal extends Component {
     }
 
     return (
-      <ListGroup>
-        <ListGroupItem>X:<span className="pull-right">{`${alvin_x}`}</span></ListGroupItem>
-        <ListGroupItem>Y:<span className="pull-right">{`${alvin_y}`}</span></ListGroupItem>
-        <ListGroupItem>Z:<span className="pull-right">{`${alvin_z}`}</span></ListGroupItem>
-      </ListGroup>
+      <Panel>
+        <Panel.Heading>Realtime Alvin Coords</Panel.Heading>
+        <Panel.Body>
+          X:<span className="pull-right">{`${alvin_x}`}</span><br/>
+          Y:<span className="pull-right">{`${alvin_y}`}</span><br/>
+          Z:<span className="pull-right">{`${alvin_z}`}</span><br/>
+        </Panel.Body>
+      </Panel>
     );
   }
 
@@ -194,7 +200,7 @@ class EventShowDetailsModal extends Component {
     let pitch = 'n/a'
     let roll = 'n/a'
 
-    if(this.props.event && this.state.event.aux_data) {
+    if(this.props.event && this.state.event.aux_data) { 
       let vehicleRealtimeNavData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
       if(vehicleRealtimeNavData.length > 0) {
         let hdgObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "heading")
@@ -210,11 +216,54 @@ class EventShowDetailsModal extends Component {
     }  
 
     return (
-      <ListGroup>
-        <ListGroupItem>Hdg:<span className="pull-right">{`${hdg}`}</span></ListGroupItem>
-        <ListGroupItem>Pitch:<span className="pull-right">{`${pitch}`}</span></ListGroupItem>
-        <ListGroupItem>Roll:<span className="pull-right">{`${roll}`}</span></ListGroupItem>
-      </ListGroup>
+      <Panel>
+        <Panel.Heading>Realtime Attitude</Panel.Heading>
+        <Panel.Body>
+          Hdg:<span className="pull-right">{`${hdg}`}</span><br/>
+          Pitch:<span className="pull-right">{`${pitch}`}</span><br/>
+          Roll:<span className="pull-right">{`${roll}`}</span><br/>
+        </Panel.Body>
+      </Panel>
+    );
+  }
+
+  renderDataPanel() {
+    let ctd_c = 'n/a'
+    let ctd_t = 'n/a'
+    let ctd_d = 'n/a'
+    let temp_probe = 'n/a'
+
+    if(this.props.event && this.state.event.aux_data) { 
+      let vehicleCTDData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleCTDData")
+      if(vehicleCTDData.length > 0) {
+        let ctd_cObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_c")
+        ctd_c = (ctd_cObj.length > 0)? `${ctd_cObj[0].data_value} ${ctd_cObj[0].data_uom}` : 'n/a'
+
+        let ctd_tObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_t")
+        ctd_t = (ctd_tObj.length > 0)? `${ctd_tObj[0].data_value} ${ctd_tObj[0].data_uom}` : 'n/a'
+
+        let ctd_dObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_d")
+        ctd_d = (ctd_dObj.length > 0)? `${ctd_dObj[0].data_value} ${ctd_dObj[0].data_uom}` : 'n/a'
+
+      }
+
+      let vehicleTempProbeData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleTempProbeData")
+      if(vehicleTempProbeData.length > 0) {
+        let temp_probeObj = vehicleTempProbeData[0].data_array.filter(data => data.data_name == "ctd_c")
+        temp_probe = (temp_probeObj.length > 0)? `${temp_probeObj[0].data_value} ${temp_probeObj[0].data_uom}` : 'n/a'
+      }
+    }  
+
+    return (
+      <Panel>
+        <Panel.Heading>Realtime Sensor Data</Panel.Heading>
+        <Panel.Body>
+          CTD C:<span className="pull-right">{`${ctd_c}`}</span><br/>
+          CTD T:<span className="pull-right">{`${ctd_t}`}</span><br/>
+          CTD D:<span className="pull-right">{`${ctd_d}`}</span><br/>
+          Temp Probe:<span className="pull-right">{`${temp_probe}`}</span><br/>
+        </Panel.Body>
+      </Panel>
     );
   }
 

@@ -26,7 +26,7 @@ class LoweringSearch extends Component {
     super(props);
 
     this.state = {
-      hideASNAP: true,
+      hideASNAP: false,
       activePage: 1
     }
 
@@ -35,8 +35,11 @@ class LoweringSearch extends Component {
     this.updateEventFilter = this.updateEventFilter.bind(this)
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.props.initLoweringReplay(this.props.match.params.id, this.state.hideASNAP);
+    if(!this.props.cruise.id){
+      this.props.initCruiseFromLowering(this.props.match.params.id);
+    }
   }
 
   componentDidUpdate() {
@@ -346,6 +349,7 @@ class LoweringSearch extends Component {
 
   render(){
 
+    let cruise_id = (this.props.cruise.cruise_id)? this.props.cruise.cruise_id : "loading..."
     let lowering_id = (this.props.lowering.lowering_id)? this.props.lowering.lowering_id : "loading..."
     return (
       <div>
@@ -355,7 +359,7 @@ class LoweringSearch extends Component {
           <Col lg={12}>
             <div>
               <Well bsSize="small">
-                {`Lowerings / ${lowering_id} / Review`}{' '}
+                {`${cruise_id} / ${lowering_id} / Review`}{' '}
                 <span className="pull-right">
                   <LinkContainer to={ `/lowering_replay/${this.props.match.params.id}` }><Button disabled={this.props.event.fetching} bsSize={'xs'}>Goto Replay</Button></LinkContainer>
                 </span>
@@ -381,6 +385,7 @@ function mapStateToProps(state) {
   return {
     roles: state.user.profile.roles,
     event: state.event,
+    cruise: state.cruise.cruise,
     lowering: state.lowering.lowering
   }
 }

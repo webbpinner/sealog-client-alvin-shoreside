@@ -63,6 +63,9 @@ class LoweringReplay extends Component {
 
   componentWillMount() {
     this.props.initLoweringReplay(this.props.match.params.id, this.state.hideASNAP);
+    if(!this.props.cruise.id){
+      this.props.initCruiseFromLowering(this.props.match.params.id);
+    }
   }
 
   componentDidMount() {
@@ -426,12 +429,15 @@ class LoweringReplay extends Component {
     }  
 
     return (
-      <ListGroup>
-        <ListGroupItem>Lat:<span className="pull-right">{`${latitude}`}</span></ListGroupItem>
-        <ListGroupItem>Lng:<span className="pull-right">{`${longitude}`}</span></ListGroupItem>
-        <ListGroupItem>Depth:<span className="pull-right">{`${depth}`}</span></ListGroupItem>
-        <ListGroupItem>Alt:<span className="pull-right">{`${altitude}`}</span></ListGroupItem>
-      </ListGroup>
+      <Panel>
+        <Panel.Heading>Realtime Navigation</Panel.Heading>
+        <Panel.Body>
+          Lat:<span className="pull-right">{`${latitude}`}</span><br/>
+          Lng:<span className="pull-right">{`${longitude}`}</span><br/>
+          Depth:<span className="pull-right">{`${depth}`}</span><br/>
+          Alt:<span className="pull-right">{`${altitude}`}</span><br/>
+        </Panel.Body>
+      </Panel>
     );
   }
 
@@ -457,11 +463,14 @@ class LoweringReplay extends Component {
     }
 
     return (
-      <ListGroup>
-        <ListGroupItem>X:<span className="pull-right">{`${alvin_x}`}</span></ListGroupItem>
-        <ListGroupItem>Y:<span className="pull-right">{`${alvin_y}`}</span></ListGroupItem>
-        <ListGroupItem>Z:<span className="pull-right">{`${alvin_z}`}</span></ListGroupItem>
-      </ListGroup>
+      <Panel>
+        <Panel.Heading>Realtime Alvin Coords</Panel.Heading>
+        <Panel.Body>
+          X:<span className="pull-right">{`${alvin_x}`}</span><br/>
+          Y:<span className="pull-right">{`${alvin_y}`}</span><br/>
+          Z:<span className="pull-right">{`${alvin_z}`}</span><br/>
+        </Panel.Body>
+      </Panel>
     );
   }
 
@@ -486,11 +495,14 @@ class LoweringReplay extends Component {
     }  
 
     return (
-      <ListGroup>
-        <ListGroupItem>Hdg:<span className="pull-right">{`${hdg}`}</span></ListGroupItem>
-        <ListGroupItem>Pitch:<span className="pull-right">{`${pitch}`}</span></ListGroupItem>
-        <ListGroupItem>Roll:<span className="pull-right">{`${roll}`}</span></ListGroupItem>
-      </ListGroup>
+      <Panel>
+        <Panel.Heading>Realtime Attitude</Panel.Heading>
+        <Panel.Body>
+          Hdg:<span className="pull-right">{`${hdg}`}</span><br/>
+          Pitch:<span className="pull-right">{`${pitch}`}</span><br/>
+          Roll:<span className="pull-right">{`${roll}`}</span><br/>
+        </Panel.Body>
+      </Panel>
     );
   }
 
@@ -522,12 +534,15 @@ class LoweringReplay extends Component {
     }  
 
     return (
-      <ListGroup>
-        <ListGroupItem>CTD C:<span className="pull-right">{`${ctd_c}`}</span></ListGroupItem>
-        <ListGroupItem>CTD T:<span className="pull-right">{`${ctd_t}`}</span></ListGroupItem>
-        <ListGroupItem>CTD D:<span className="pull-right">{`${ctd_d}`}</span></ListGroupItem>
-        <ListGroupItem>Temp Probe:<span className="pull-right">{`${temp_probe}`}</span></ListGroupItem>
-      </ListGroup>
+      <Panel>
+        <Panel.Heading>Realtime Sensor Data</Panel.Heading>
+        <Panel.Body>
+          CTD C:<span className="pull-right">{`${ctd_c}`}</span><br/>
+          CTD T:<span className="pull-right">{`${ctd_t}`}</span><br/>
+          CTD D:<span className="pull-right">{`${ctd_d}`}</span><br/>
+          Temp Probe:<span className="pull-right">{`${temp_probe}`}</span><br/>
+        </Panel.Body>
+      </Panel>
     );
   }
 
@@ -763,6 +778,9 @@ class LoweringReplay extends Component {
   // }
 
   render(){
+
+    let cruise_id = (this.props.cruise.cruise_id)? this.props.cruise.cruise_id : "Loading..."
+    let lowering_id = (this.props.lowering.lowering_id)? this.props.lowering.lowering_id : "Loading..."
     return (
       <div>
         <ImagePreviewModal />
@@ -771,7 +789,7 @@ class LoweringReplay extends Component {
           <Col lg={12}>
             <div>
               <Well bsSize="small">
-                {`Lowerings / ${this.props.lowering.lowering_id} / Replay`}{' '}
+                {`${cruise_id} / ${lowering_id} / Replay`}{' '}
                 <span className="pull-right">
                   <LinkContainer to={ `/lowering_review/${this.props.match.params.id}` }><Button disabled={this.props.event.fetching} bsSize={'xs'}>Goto Review</Button></LinkContainer>
                 </span>
@@ -819,6 +837,7 @@ class LoweringReplay extends Component {
 
 function mapStateToProps(state) {
   return {
+    cruise: state.cruise.cruise,
     lowering: state.lowering.lowering,  
     roles: state.user.profile.roles,
     event: state.event

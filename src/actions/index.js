@@ -311,6 +311,22 @@ export function updateEvent(eventValue, eventFreeText = '', eventOptions = [], e
   }
 }
 
+// export async function updateLoweringReplayEvent(event_id) {
+//   console.log("event_id:", event_id)
+//   const response = await axios.get(API_ROOT_URL + '/api/v1/events/' + event_id, {
+//     headers: {
+//       authorization: cookies.get('token')
+//     },
+//   });
+
+//   return async dispatch => {
+//     try {
+//         dispatch({type: UPDATE_EVENT, payload: data})
+//     } catch(e) {
+//       console.log(e);
+//     }
+//   }
+// }
 export function updateLoweringReplayEvent(event_id) {
   const request = axios.get(API_ROOT_URL + '/api/v1/events/' + event_id, {
     headers: {
@@ -1433,6 +1449,32 @@ export function initCruise(id) {
   }
 }
 
+export function initCruiseFromLowering(id) {
+  return function (dispatch) {
+    axios.get(`${API_ROOT_URL}/api/v1/lowerings/${id}`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((loweringResponse) => {
+      axios.get(`${API_ROOT_URL}/api/v1/cruises?startTS=${loweringResponse.data.start_ts}&stopTS=${loweringResponse.data.stop_ts}`,
+      {
+        headers: {
+          authorization: cookies.get('token')
+        }
+      }).then((response) => {
+        dispatch({ type: INIT_CRUISE, payload: response.data[0] })
+      }).catch((error)=>{
+        if(error.response.data.statusCode !== 404) {
+          console.log(error);
+        }
+      })
+    }).catch((error)=>{
+      console.log(error);
+    })
+  }
+}
+
 export function initLowering(id) {
   return function (dispatch) {
     axios.get(`${API_ROOT_URL}/api/v1/lowerings/${id}`,
@@ -1469,6 +1511,7 @@ export function initLoweringReplay(id, hideASNAP = false) {
       if(error.response.data.statusCode !== 404) {
         console.log(error);
       }
+      dispatch({ type: UPDATE_EVENTS, payload: [] })
       dispatch({ type: EVENT_FETCHING, payload: false})
     })
   }
