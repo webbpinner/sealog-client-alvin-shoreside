@@ -42,21 +42,21 @@ class CruiseMenu extends Component {
   componentDidMount(){
     this.props.fetchCruises();
     this.props.fetchLowerings();
-
-    if(this.props.cruise.id) {
-      this.handleYearSelect(moment.utc(this.props.cruise.start_ts).format("YYYY"))
-      this.handleCruiseSelect(this.props.cruise.id)
-    };
-
-    if(this.props.lowering.id) {
-      this.handleLoweringSelect(this.props.lowering.id)
-    }
   }
 
   componentDidUpdate(){
     if(this.props.cruises.length > 0 && this.state.years === null) {
       this.buildYearList()
     }
+
+    if(this.props.cruise.id && this.props.cruises.length > 0 && this.props.lowerings.length > 0 && this.state.activeCruise === null) {
+      this.handleYearSelect(moment.utc(this.props.cruise.start_ts).format("YYYY"))
+      this.handleCruiseSelect(this.props.cruise.id)
+    };
+
+    if(this.props.lowering.id && this.props.lowerings.length > 0 && this.state.activeLowering === null) {
+      this.handleLoweringSelect(this.props.lowering.id)
+    };
   }
 
   componentWillUnmount(){
@@ -64,7 +64,7 @@ class CruiseMenu extends Component {
 
   handleCruiseSelect(id) {
     this.props.initCruise(id)
-    if(this.state.activeCruise ==null || this.state.activeCruise.id != id) {
+    if(this.state.activeCruise === null || this.state.activeCruise.id != id) {
       window.scrollTo(0, 0);
       const activeCruise = this.props.cruises.find(cruise => cruise.id === id)
       this.buildLoweringList(activeCruise.start_ts, activeCruise.stop_ts)
@@ -289,6 +289,12 @@ class CruiseMenu extends Component {
           </Col>
         </Row>
         <Row>
+          <Col xs={12}>
+            Please select a cruise from the list above.  Once a cruise is selected please select a lowering from the list of lowerings associated with that cruise that appear at the bottom of the cruise information panel.  Selecting a lowering will open the lowering information panel.  At the bottom of the cruise information panel there will be buttons for proceeding to the lowering replay section of Sealog or the lowering event search section of Sealog.
+            If at any time you wish to return to this page please click the "Sealog" text in upper-left part of the window.<br/><br/>
+          </Col>
+        </Row>
+        <Row>
           <Col sm={3} md={3} lg={2}>
             {this.renderYearList()}
           </Col>
@@ -297,12 +303,6 @@ class CruiseMenu extends Component {
           </Col>
           <Col sm={5} md={5} lg={5}>
             {this.renderLoweringPanel()}
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            Please select a cruise from the list above.  Once a cruise is selected please select a lowering from the list of lowerings associated with that cruise that appear at the bottom of the cruise information panel.  Selecting a lowering will open the lowering information panel.  At the bottom of the cruise information panel there will be buttons for proceeding to the lowering replay section of Sealog or the lowering event search section of Sealog.
-            If at any time you wish to return to this page please click the "Sealog" text in upper-left part of the window.
           </Col>
         </Row>
       </div>

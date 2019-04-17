@@ -61,14 +61,11 @@ class LoweringReplay extends Component {
 
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.props.initLoweringReplay(this.props.match.params.id, this.state.hideASNAP);
     if(!this.props.cruise.id){
       this.props.initCruiseFromLowering(this.props.match.params.id);
     }
-  }
-
-  componentDidMount() {
   }
 
   componentDidUpdate() {
