@@ -31,6 +31,7 @@ class EventManagement extends Component {
       activePage: 1,
       fetching: false,
       events: null,
+      eventCount: 0,
       eventFilter: {},
     }
 
@@ -87,7 +88,7 @@ class EventManagement extends Component {
   }
 
   handleEventShowDetailsModal(event) {
-    this.props.showModal('eventShowDetails', { event: event, handleUpdateEvent: this.handleEventUpdate });
+    this.props.showModal('eventShowDetails', { event_id: event.id, handleUpdateEvent: this.handleEventUpdate });
   }
 
   async fetchEventsForDisplay(eventFilter = this.state.eventFilter) {
@@ -112,9 +113,6 @@ class EventManagement extends Component {
         this.setState({fetching: false})
         this.setState({events: response.data})
       }).catch((error)=>{
-        console.log(error)
-
-        console.log("?? 1")
         if(error.response.data.statusCode == 404){
           this.setState({fetching: false})
           this.setState({events: []})

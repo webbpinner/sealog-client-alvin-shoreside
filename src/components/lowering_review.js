@@ -35,9 +35,12 @@ class LoweringSearch extends Component {
     this.updateEventFilter = this.updateEventFilter.bind(this)
   }
 
-  componentWillMount() {
-    this.props.initLoweringReplay(this.props.match.params.id, this.state.hideASNAP);
-    if(!this.props.cruise.id){
+  componentDidMount() {
+    if(!this.props.lowering.id || this.props.lowering.id != this.props.match.params.id || this.props.event.events.length == 0) {
+      this.props.initLoweringReplay(this.props.match.params.id, this.state.hideASNAP);
+    }
+
+    if(!this.props.cruise.id || this.props.lowering.id != this.props.match.params.id){
       this.props.initCruiseFromLowering(this.props.match.params.id);
     }
   }
@@ -59,7 +62,8 @@ class LoweringSearch extends Component {
   }
 
   handleEventCommentModal(event) {
-    this.props.showModal('eventComment', { event: event, handleUpdateEvent: this.handleEventUpdate });
+    // this.props.showModal('eventComment', { event: event, handleUpdateEvent: this.handleEventUpdate });
+    this.props.showModal('eventComment', { event: event, handleUpdateEvent: this.props.updateEvent });
   }
 
   async handleEventUpdate(event_id, event_value, event_free_text, event_options, event_ts) {
@@ -70,7 +74,7 @@ class LoweringSearch extends Component {
   }
 
   handleEventShowDetailsModal(event) {
-    this.props.showModal('eventShowDetails', { event: event, handleUpdateEvent: this.props.updateEvent });
+    this.props.showModal('eventShowDetails', { event_id: event.id, handleUpdateEvent: this.props.updateEvent });
   }
 
   fetchEventAuxData() {
@@ -287,10 +291,11 @@ class LoweringSearch extends Component {
             eventOptionsArray.push(`free_text: \"${event.event_free_text}\"`)
           } 
 
-          let active = (this.props.event.selected_event.id == event.id)? true : false
+          // let active = (this.props.event.selected_event.id == event.id)? true : false
+          let active = false
 
           let eventOptions = (eventOptionsArray.length > 0)? '--> ' + eventOptionsArray.join(', '): ''
-          let commentIcon = (comment_exists)? <FontAwesomeIcon onClick={() => this.handleEventCommentModal(i)} icon='comment' fixedWidth transform="grow-4"/> : <span onClick={() => this.handleEventCommentModal(i)} className="fa-layers fa-fw"><FontAwesomeIcon icon='comment' fixedWidth transform="grow-4"/><FontAwesomeIcon icon='plus' fixedWidth inverse transform="shrink-4"/></span>
+          let commentIcon = (comment_exists)? <FontAwesomeIcon onClick={() => this.handleEventCommentModal(event)} icon='comment' fixedWidth transform="grow-4"/> : <span onClick={() => this.handleEventCommentModal(event)} className="fa-layers fa-fw"><FontAwesomeIcon icon='comment' fixedWidth transform="grow-4"/><FontAwesomeIcon icon='plus' fixedWidth inverse transform="shrink-4"/></span>
           let commentTooltip = (comment_exists)? (<OverlayTrigger placement="top" overlay={<Tooltip id={`commentTooltip_${event.id}`}>Edit/View Comment</Tooltip>}>{commentIcon}</OverlayTrigger>) : (<OverlayTrigger placement="top" overlay={<Tooltip id={`commentTooltip_${event.id}`}>Add Comment</Tooltip>}>{commentIcon}</OverlayTrigger>)
 
           // eventArray.push(<ListGroupItem key={event.id}><Row><Col xs={11} onClick={() => this.handleEventShowDetailsModal(event)}>{event.ts} {`<${event.event_author}>`}: {event.event_value} {eventOptions}</Col><Col>{deleteTooltip} {commentTooltip} {seatubeTooltip} {youtubeTooltip} </Col></Row></ListGroupItem>);
@@ -302,7 +307,7 @@ class LoweringSearch extends Component {
       return eventList
     }
 
-    return (<ListGroupItem>No events found</ListGroupItem>)
+    return (this.props.event.fetching)? (<ListGroupItem>Loading...</ListGroupItem>) : (<ListGroupItem>No events found</ListGroupItem>)
   }
 
   renderPagination() {
@@ -359,20 +364,20 @@ class LoweringSearch extends Component {
           <Col lg={12}>
             <div>
               <Well bsSize="small">
-                {`${cruise_id} / ${lowering_id} / Review`}{' '}
+                <span className="text-warning">{cruise_id}</span> / <span className="text-warning">{lowering_id}</span> / <span className="text-primary">Review</span>{' '}
                 <span className="pull-right">
-                  <LinkContainer to={ `/lowering_replay/${this.props.match.params.id}` }><Button disabled={this.props.event.fetching} bsSize={'xs'}>Goto Replay</Button></LinkContainer>
+                  <LinkContainer to={ `/lowering_replay/${this.props.match.params.id}` }><Button disabled={this.props.event.fetching} bsSize={'xs'} bsStyle={'primary'}>Goto Replay</Button></LinkContainer>
                 </span>
               </Well>
             </div>
           </Col>
         </Row>
         <Row>
-          <Col sm={7} md={8} lg={9}>
+          <Col sm={7} md={9} lg={9}>
             {this.renderEventPanel()}
             {this.renderPagination()}
           </Col>
-          <Col sm={5} md={4} lg={3}>
+          <Col sm={5} md={3} lg={3}>
             <EventFilterForm disabled={this.props.event.fetching} hideASNAP={this.state.hideASNAP} handlePostSubmit={ this.updateEventFilter } minDate={this.props.lowering.start_ts} maxDate={this.props.lowering.stop_ts}/>
           </Col>
         </Row>

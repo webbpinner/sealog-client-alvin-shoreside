@@ -422,6 +422,8 @@ function mapStateToProps(state) {
     // delete initialValues.lowering_additional_meta
   }
 
+  console.log(initialValues)
+
   return {
     errorMessage: state.lowering.lowering_error,
     message: state.lowering.lowering_message,

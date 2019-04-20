@@ -70,6 +70,13 @@ class UpdateCruise extends Component {
       formProps.cruise_additional_meta.cruise_description = ''
     }
 
+    if(formProps.cruise_linkToR2R) {
+      formProps.cruise_additional_meta.cruise_linkToR2R = formProps.cruise_linkToR2R
+      delete formProps.cruise_linkToR2R
+    } else {
+      formProps.cruise_additional_meta.cruise_linkToR2R = ''
+    }
+
     formProps.cruise_additional_meta.cruise_files = this.pond.getFiles().map(file => file.serverId)
 
     this.props.updateCruise({...formProps });
@@ -264,7 +271,7 @@ class UpdateCruise extends Component {
                 name="cruise_name"
                 type="text"
                 component={this.renderField}
-                label="Full Name"
+                label="Cruise Name"
                 placeholder="i.e. Lost City 2018"
                 required={true}
               />
@@ -280,7 +287,7 @@ class UpdateCruise extends Component {
                 name="cruise_location"
                 type="text"
                 component={this.renderField}
-                label="Full Location"
+                label="Cruise Location"
                 placeholder="i.e. Lost City"
               />
               <Field
@@ -318,6 +325,13 @@ class UpdateCruise extends Component {
                 type="textarea"
                 label="Cruise Tags, comma delimited"
                 placeholder="A comma-delimited list of tags, i.e. coral,chemistry,engineering"
+              />
+              <Field
+                name="cruise_linkToR2R"
+                component={this.renderField}
+                type="text"
+                label="Link to Cruise in R2R"
+                placeholder="i.e https://doi.org/10.7284/908111"
               />
               <label>Cruise Files</label>
               {this.renderFiles()}
@@ -421,6 +435,9 @@ function mapStateToProps(state) {
       initialValues.cruise_participants = initialValues.cruise_additional_meta.cruise_participants
     }
 
+    if (initialValues.cruise_additional_meta.cruise_linkToR2R) {
+      initialValues.cruise_linkToR2R = initialValues.cruise_additional_meta.cruise_linkToR2R
+    }
     // delete initialValues.cruise_additional_meta
   }
 

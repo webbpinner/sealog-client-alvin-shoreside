@@ -25,7 +25,7 @@ class EventFilterForm extends Component {
     // handleHide: PropTypes.func.isRequired
   };
 
-  componentWillMount() {
+  componentDidMount() {
   }
 
   componentWillUnmount() {
@@ -185,7 +185,6 @@ function validate(formProps) {
 }
 
 function mapStateToProps(state) {
-
   return {
     initialValues: state.event.eventFilter,
   };

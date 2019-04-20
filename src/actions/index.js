@@ -213,6 +213,14 @@ export function gotoHome() {
   }
 }
 
+export function gotoLoweringGallery(id) {
+
+  return function (dispatch) {
+    dispatch(initLowering(id))
+    dispatch(push(`/lowering_gallery/${id}`));
+  }
+}
+
 export function gotoLoweringReplay(id) {
 
   return function (dispatch) {
@@ -1360,6 +1368,11 @@ export function clearSelectedEvent() {
   }
 }
 
+export function clearEvents() {
+  return function(dispatch) {
+    dispatch({type: UPDATE_EVENTS, payload: []})
+  }
+}
 
 export function fetchEventHistory(asnap = false) {
 

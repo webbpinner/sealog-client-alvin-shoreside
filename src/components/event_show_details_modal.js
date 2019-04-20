@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { Button, Checkbox, Row, Col, Thumbnail, ControlLabel, ListGroup, ListGroupItem, FormGroup, FormControl, FormGroupItem, Panel, Modal, Well } from 'react-bootstrap';
 import { connectModal } from 'redux-modal';
 import { LinkContainer } from 'react-router-bootstrap';
+import LoweringReplayMap from './lowering_replay_map';
 import Datetime from 'react-datetime';
 import moment from 'moment';
 import ImagePreviewModal from './image_preview_modal';
@@ -21,27 +22,36 @@ class EventShowDetailsModal extends Component {
   constructor (props) {
     super(props);
 
-    this.state = { event: {} }
+    this.state = {
+      event: {},
+      mapHeight: 0
+    }
 
     this.handleImagePreviewModal = this.handleImagePreviewModal.bind(this);
 
   }
 
   static propTypes = {
-    event: PropTypes.object.isRequired,
+    event_id: PropTypes.string.isRequired,
     handleHide: PropTypes.func.isRequired,
     handleUpdateEvent: PropTypes.func.isRequired
   };
 
-  componentWillMount() {
+  componentDidMount() {
     this.initEvent()
+  }
+
+  componentDidUpdate() {
+    if(this.state.mapHeight != this.mapPanel.clientHeight) {
+      this.setState({mapHeight: this.mapPanel.clientHeight });
+    }
   }
 
   componentWillUnmount() {
   }
 
   initEvent() {
-    axios.get(`${API_ROOT_URL}/api/v1/event_exports/${this.props.event.id}`,
+    axios.get(`${API_ROOT_URL}/api/v1/event_exports/${this.props.event_id}`,
       {
         headers: {
         authorization: cookies.get('token')
@@ -73,7 +83,7 @@ class EventShowDetailsModal extends Component {
   }
 
   renderImageryPanel() {
-    if(this.props.event && this.state.event.aux_data) { 
+    if(this.props.event_id && this.state.event.aux_data) { 
       if (this.state.event.event_value == "SuliusCam") {
         let tmpData =[]
 
@@ -88,7 +98,7 @@ class EventShowDetailsModal extends Component {
             {
               tmpData.map((camera) => {
                 return (
-                  <Col key={camera.source} xs={12} sm={12} md={8} mdOffset={2} lg={8} lgOffset={2}>
+                  <Col key={camera.source} xs={12} sm={6} md={6} lg={6}>
                     {this.renderImage(camera.source, camera.filepath)}
                   </Col>
                 )
@@ -97,13 +107,13 @@ class EventShowDetailsModal extends Component {
           </Row>
         )
       } else {
-        let frameGrabberData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == 'vehicleRealtimeFramegrabberData')
+        let frameGrabberData = this.state.event.aux_data.find(aux_data => aux_data.data_source == 'vehicleRealtimeFramegrabberData')
         let tmpData = []
 
-        if(frameGrabberData.length > 0) {
-          for (let i = 0; i < frameGrabberData[0].data_array.length; i+=2) {
+        if(frameGrabberData) {
+          for (let i = 0; i < frameGrabberData.data_array.length; i+=2) {
       
-            tmpData.push({source: frameGrabberData[0].data_array[i].data_value, filepath: API_ROOT_URL + IMAGE_PATH + frameGrabberData[0].data_array[i+1].data_value} )
+            tmpData.push({source: frameGrabberData.data_array[i].data_value, filepath: API_ROOT_URL + IMAGE_PATH + frameGrabberData.data_array[i+1].data_value} )
           }
 
           return (
@@ -111,7 +121,7 @@ class EventShowDetailsModal extends Component {
               {
                 tmpData.map((camera) => {
                   return (
-                    <Col key={camera.source} xs={12} sm={6} md={4} lg={4}>
+                    <Col key={camera.source} xs={12} sm={6} md={6} lg={6}>
                       {this.renderImage(camera.source, camera.filepath)}
                     </Col>
                   )
@@ -131,20 +141,20 @@ class EventShowDetailsModal extends Component {
     let depth = 'n/a'
     let altitude = 'n/a'
 
-    if(this.props.event && this.state.event.aux_data) { 
-      let vehicleRealtimeNavData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
-      if(vehicleRealtimeNavData.length > 0) {
-        let latObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "latitude")
-        latitude = (latObj.length > 0)? `${latObj[0].data_value} ${latObj[0].data_uom}` : 'n/a'
+    if(this.props.event_id && this.state.event.aux_data) { 
+      let vehicleRealtimeNavData = this.state.event.aux_data.find(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
+      if(vehicleRealtimeNavData) {
+        let latObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "latitude")
+        latitude = (latObj)? `${latObj.data_value} ${latObj.data_uom}` : 'n/a'
 
-        let lonObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "longitude")
-        longitude = (lonObj.length > 0)? `${lonObj[0].data_value} ${lonObj[0].data_uom}` : 'n/a'
+        let lonObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "longitude")
+        longitude = (lonObj)? `${lonObj.data_value} ${lonObj.data_uom}` : 'n/a'
 
-        let depthObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "depth")
-        depth = (depthObj.length > 0)? `${depthObj[0].data_value} ${depthObj[0].data_uom}` : 'n/a'
+        let depthObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "depth")
+        depth = (depthObj)? `${depthObj.data_value} ${depthObj.data_uom}` : 'n/a'
 
-        let altObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "altitude")
-        altitude = (altObj.length > 0)? `${altObj[0].data_value} ${altObj[0].data_uom}` : 'n/a'
+        let altObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "altitude")
+        altitude = (altObj)? `${altObj.data_value} ${altObj.data_uom}` : 'n/a'
 
       }
     }  
@@ -168,17 +178,17 @@ class EventShowDetailsModal extends Component {
     let alvin_y = 'n/a'
     let alvin_z = 'n/a'
 
-    if(this.props.event && this.state.event.aux_data) { 
-      let alvinRealtimeAlvinCoordData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeAlvinCoordData")
-      if(alvinRealtimeAlvinCoordData.length > 0) {
-        let xObj = alvinRealtimeAlvinCoordData[0].data_array.filter(data => data.data_name == "alvin_x")
-        alvin_x = (xObj.length > 0)? `${xObj[0].data_value} ${xObj[0].data_uom}` : 'n/a'
+    if(this.props.event_id && this.state.event.aux_data) { 
+      let alvinRealtimeAlvinCoordData = this.state.event.aux_data.find(aux_data => aux_data.data_source == "vehicleRealtimeAlvinCoordData")
+      if(alvinRealtimeAlvinCoordData) {
+        let xObj = alvinRealtimeAlvinCoordData.data_array.find(data => data.data_name == "alvin_x")
+        alvin_x = (xObj)? `${xObj.data_value} ${xObj.data_uom}` : 'n/a'
 
-        let yObj = alvinRealtimeAlvinCoordData[0].data_array.filter(data => data.data_name == "alvin_y")
-        alvin_y = (yObj.length > 0)? `${yObj[0].data_value} ${yObj[0].data_uom}` : 'n/a'
+        let yObj = alvinRealtimeAlvinCoordData.data_array.find(data => data.data_name == "alvin_y")
+        alvin_y = (yObj)? `${yObj.data_value} ${yObj.data_uom}` : 'n/a'
 
-        let zObj = alvinRealtimeAlvinCoordData[0].data_array.filter(data => data.data_name == "alvin_z")
-        alvin_z = (zObj.length > 0)? `${zObj[0].data_value} ${zObj[0].data_uom}` : 'n/a'
+        let zObj = alvinRealtimeAlvinCoordData.data_array.find(data => data.data_name == "alvin_z")
+        alvin_z = (zObj)? `${zObj.data_value} ${zObj.data_uom}` : 'n/a'
 
       }
     }
@@ -200,17 +210,17 @@ class EventShowDetailsModal extends Component {
     let pitch = 'n/a'
     let roll = 'n/a'
 
-    if(this.props.event && this.state.event.aux_data) { 
-      let vehicleRealtimeNavData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
-      if(vehicleRealtimeNavData.length > 0) {
-        let hdgObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "heading")
-        hdg = (hdgObj.length > 0)? `${hdgObj[0].data_value} ${hdgObj[0].data_uom}` : 'n/a'
+    if(this.props.event_id && this.state.event.aux_data) { 
+      let vehicleRealtimeNavData = this.state.event.aux_data.find(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
+      if(vehicleRealtimeNavData) {
+        let hdgObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "heading")
+        hdg = (hdgObj)? `${hdgObj.data_value} ${hdgObj.data_uom}` : 'n/a'
 
-        let pitchObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "pitch")
-        pitch = (pitchObj.length > 0)? `${pitchObj[0].data_value} ${pitchObj[0].data_uom}` : 'n/a'
+        let pitchObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "pitch")
+        pitch = (pitchObj)? `${pitchObj.data_value} ${pitchObj.data_uom}` : 'n/a'
 
-        let rollObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "roll")
-        roll = (rollObj.length > 0)? `${rollObj[0].data_value} ${rollObj[0].data_uom}` : 'n/a'
+        let rollObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "roll")
+        roll = (rollObj)? `${rollObj.data_value} ${rollObj.data_uom}` : 'n/a'
 
       }
     }  
@@ -233,24 +243,24 @@ class EventShowDetailsModal extends Component {
     let ctd_d = 'n/a'
     let temp_probe = 'n/a'
 
-    if(this.props.event && this.state.event.aux_data) { 
-      let vehicleCTDData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleCTDData")
-      if(vehicleCTDData.length > 0) {
-        let ctd_cObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_c")
-        ctd_c = (ctd_cObj.length > 0)? `${ctd_cObj[0].data_value} ${ctd_cObj[0].data_uom}` : 'n/a'
+    if(this.props.event_id && this.state.event.aux_data) { 
+      let vehicleCTDData = this.state.event.aux_data.find(aux_data => aux_data.data_source == "vehicleCTDData")
+      if(vehicleCTDData) {
+        let ctd_cObj = vehicleCTDData.data_array.find(data => data.data_name == "ctd_c")
+        ctd_c = (ctd_cObj)? `${ctd_cObj.data_value} ${ctd_cObj.data_uom}` : 'n/a'
 
-        let ctd_tObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_t")
-        ctd_t = (ctd_tObj.length > 0)? `${ctd_tObj[0].data_value} ${ctd_tObj[0].data_uom}` : 'n/a'
+        let ctd_tObj = vehicleCTDData.data_array.find(data => data.data_name == "ctd_t")
+        ctd_t = (ctd_tObj)? `${ctd_tObj.data_value} ${ctd_tObj.data_uom}` : 'n/a'
 
-        let ctd_dObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_d")
-        ctd_d = (ctd_dObj.length > 0)? `${ctd_dObj[0].data_value} ${ctd_dObj[0].data_uom}` : 'n/a'
+        let ctd_dObj = vehicleCTDData.data_array.find(data => data.data_name == "ctd_d")
+        ctd_d = (ctd_dObj)? `${ctd_dObj.data_value} ${ctd_dObj.data_uom}` : 'n/a'
 
       }
 
-      let vehicleTempProbeData = this.state.event.aux_data.filter(aux_data => aux_data.data_source == "vehicleTempProbeData")
-      if(vehicleTempProbeData.length > 0) {
-        let temp_probeObj = vehicleTempProbeData[0].data_array.filter(data => data.data_name == "ctd_c")
-        temp_probe = (temp_probeObj.length > 0)? `${temp_probeObj[0].data_value} ${temp_probeObj[0].data_uom}` : 'n/a'
+      let vehicleTempProbeData = this.state.event.aux_data.find(aux_data => aux_data.data_source == "vehicleTempProbeData")
+      if(vehicleTempProbeData) {
+        let temp_probeObj = vehicleTempProbeData.data_array.find(data => data.data_name == "ctd_c")
+        temp_probe = (temp_probeObj)? `${temp_probeObj.data_value} ${temp_probeObj.data_uom}` : 'n/a'
       }
     }  
 
@@ -266,6 +276,21 @@ class EventShowDetailsModal extends Component {
       </Panel>
     );
   }
+
+  renderMap() {
+
+    return (
+      <Panel id="MapPanel" style={{backgroundColor: "#282828"}}>
+        <Panel.Body style={{padding: "4px", marginBottom: "10px"}}>
+          <div ref={ (mapPanel) => this.mapPanel = mapPanel} className="embed-responsive embed-responsive-16by9">
+            <LoweringReplayMap height={this.state.mapHeight} event={this.state.event}/>
+          </div>
+          <div style={{marginTop: "8px", marginLeft: "10px"}}>Map</div>
+        </Panel.Body>
+      </Panel>
+    )
+  }
+
 
   render() {
     const { show, handleHide } = this.props
@@ -296,8 +321,11 @@ class EventShowDetailsModal extends Component {
 
             <Modal.Body>
               <Row>
-                <Col xs={12}>
+                <Col sm={8} md={8} lg={8}>
                   {this.renderImageryPanel()}
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  {this.renderMap()}
                 </Col>
               </Row>
               <Row>

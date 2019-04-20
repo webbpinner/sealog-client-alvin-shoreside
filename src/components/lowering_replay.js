@@ -10,10 +10,10 @@ import { connect } from 'react-redux';
 import { Button, Row, Col, Grid, Panel, Accordion, Pagination, ListGroup, ListGroupItem, MenuItem, Thumbnail, Well, OverlayTrigger, Tooltip, ButtonToolbar, DropdownButton } from 'react-bootstrap';
 import 'rc-slider/assets/index.css';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
-import { Line } from 'rc-progress';
 import EventFilterForm from './event_filter_form';
 import ImagePreviewModal from './image_preview_modal';
 import EventCommentModal from './event_comment_modal';
+import LoweringReplayMap from './lowering_replay_map';
 import * as actions from '../actions';
 import { ROOT_PATH, API_ROOT_URL, IMAGE_PATH } from '../client_config';
 
@@ -36,7 +36,7 @@ const FREV = 3
 
 const maxEventsPerPage = 8;
 
-// const SliderWithTooltip = createSliderWithTooltip(Slider);
+const SliderWithTooltip = createSliderWithTooltip(Slider);
 
 class LoweringReplay extends Component {
 
@@ -48,7 +48,8 @@ class LoweringReplay extends Component {
       replayState: PAUSE,
       replayEventIndex: 0,
       hideASNAP: false,
-      activePage: 1
+      activePage: 1,
+      mapHeight: 0,
     }
 
     this.sliderTooltipFormatter = this.sliderTooltipFormatter.bind(this);
@@ -56,19 +57,27 @@ class LoweringReplay extends Component {
     this.handleEventClick = this.handleEventClick.bind(this);
     this.handlePageSelect = this.handlePageSelect.bind(this);
     this.replayAdvance = this.replayAdvance.bind(this);
+    this.handleLoweringReplayPause = this.handleLoweringReplayPause.bind(this);
     this.replayReverse = this.replayReverse.bind(this);
     this.updateEventFilter = this.updateEventFilter.bind(this)
 
   }
 
   componentDidMount() {
-    this.props.initLoweringReplay(this.props.match.params.id, this.state.hideASNAP);
-    if(!this.props.cruise.id){
+
+    if(!this.props.lowering.id || this.props.lowering.id != this.props.match.params.id || this.props.event.events.length == 0) {
+      this.props.initLoweringReplay(this.props.match.params.id, this.state.hideASNAP);
+    }
+
+    if(!this.props.cruise.id || this.props.lowering.id != this.props.match.params.id){
       this.props.initCruiseFromLowering(this.props.match.params.id);
     }
   }
 
   componentDidUpdate() {
+    if(this.state.mapHeight != this.mapPanel.clientHeight) {
+      this.setState({mapHeight: this.mapPanel.clientHeight });
+    }
   }
 
   componentWillUnmount(){
@@ -231,8 +240,14 @@ class LoweringReplay extends Component {
   }
 
   sliderTooltipFormatter(v) {
-    let loweringDuration = (this.props.event.events.length > 0)? this.props.event.events[v].ts : ''
-    return `${loweringDuration}`;
+    if(this.props.event.events.length > 0) {
+      let loweringStartTime = moment(this.props.lowering.start_ts)
+      let loweringNow = moment(this.props.event.events[v].ts)
+      let loweringElapse = loweringNow.diff(loweringStartTime)
+      return moment.duration(loweringElapse).format("d [days] hh:mm:ss")
+    }
+
+    return ''
   }
 
   handleSliderChange(index) {
@@ -262,7 +277,6 @@ class LoweringReplay extends Component {
   }
 
   handlePageSelect(eventKey) {
-    // console.log("eventKey:", eventKey)
     this.handleLoweringReplayPause();
     this.setState({activePage: eventKey, replayEventIndex: (eventKey-1)*maxEventsPerPage });
     this.props.advanceLoweringReplayTo(this.props.event.events[(eventKey-1)*maxEventsPerPage].id)
@@ -271,7 +285,7 @@ class LoweringReplay extends Component {
   renderImage(source, filepath) {
     return (
       <Thumbnail onClick={ () => this.handleImageClick(source, filepath) } onError={this.handleMissingImage} src={filepath}>
-        <div>{`Source: ${source}`}</div>
+        <div>{`${source}`}</div>
       </Thumbnail>
     )
   }
@@ -364,7 +378,7 @@ class LoweringReplay extends Component {
             {
               tmpData.map((camera) => {
                 return (
-                  <Col key={camera.source} xs={6} sm={4} md={4} lg={4}>
+                  <Col key={camera.source} xs={12} sm={6} md={6} lg={6}>
                     {this.renderImage(camera.source, camera.filepath)}
                   </Col>
                 )
@@ -387,7 +401,7 @@ class LoweringReplay extends Component {
               {
                 tmpData.map((camera) => {
                   return (
-                    <Col key={camera.source} xs={6} sm={4} md={4} lg={4}>
+                    <Col key={camera.source} xs={12} sm={6} md={6} lg={6}>
                       {this.renderImage(camera.source, camera.filepath)}
                     </Col>
                   )
@@ -408,22 +422,22 @@ class LoweringReplay extends Component {
     let altitude = 'n/a'
 
     if(this.props.event && this.props.event.selected_event.aux_data) {
-      let vehicleRealtimeNavData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
-      if(vehicleRealtimeNavData.length > 0) {
-        let latObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "latitude")
-        latitude = (latObj.length > 0)? `${latObj[0].data_value} ${latObj[0].data_uom}` : 'n/a'
+      let vehicleRealtimeNavData = this.props.event.selected_event.aux_data.find(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
+      if(vehicleRealtimeNavData) {
+        let latObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "latitude")
+        latitude = (latObj)? `${latObj.data_value} ${latObj.data_uom}` : 'n/a'
 
-        let lonObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "longitude")
-        longitude = (lonObj.length > 0)? `${lonObj[0].data_value} ${lonObj[0].data_uom}` : 'n/a'
+        let lonObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "longitude")
+        longitude = (lonObj)? `${lonObj.data_value} ${lonObj.data_uom}` : 'n/a'
 
-        let depthObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "depth")
-        depth = (depthObj.length > 0)? `${depthObj[0].data_value} ${depthObj[0].data_uom}` : 'n/a'
+        let depthObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "depth")
+        depth = (depthObj)? `${depthObj.data_value} ${depthObj.data_uom}` : 'n/a'
 
-        let altObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "altitude")
-        altitude = (altObj.length > 0)? `${altObj[0].data_value} ${altObj[0].data_uom}` : 'n/a'
+        let altObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "altitude")
+        altitude = (altObj)? `${altObj.data_value} ${altObj.data_uom}` : 'n/a'
 
       }
-    }  
+    }
 
     return (
       <Panel>
@@ -445,16 +459,16 @@ class LoweringReplay extends Component {
     let alvin_z = 'n/a'
 
     if(this.props.event && this.props.event.selected_event.aux_data) {
-      let alvinRealtimeAlvinCoordData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeAlvinCoordData")
-      if(alvinRealtimeAlvinCoordData.length > 0) {
-        let xObj = alvinRealtimeAlvinCoordData[0].data_array.filter(data => data.data_name == "alvin_x")
-        alvin_x = (xObj.length > 0)? `${xObj[0].data_value} ${xObj[0].data_uom}` : 'n/a'
+      let alvinRealtimeAlvinCoordData = this.props.event.selected_event.aux_data.find(aux_data => aux_data.data_source == "vehicleRealtimeAlvinCoordData")
+      if(alvinRealtimeAlvinCoordData) {
+        let xObj = alvinRealtimeAlvinCoordData.data_array.find(data => data.data_name == "alvin_x")
+        alvin_x = (xObj)? `${xObj.data_value} ${xObj.data_uom}` : 'n/a'
 
-        let yObj = alvinRealtimeAlvinCoordData[0].data_array.filter(data => data.data_name == "alvin_y")
-        alvin_y = (yObj.length > 0)? `${yObj[0].data_value} ${yObj[0].data_uom}` : 'n/a'
+        let yObj = alvinRealtimeAlvinCoordData.data_array.find(data => data.data_name == "alvin_y")
+        alvin_y = (yObj)? `${yObj.data_value} ${yObj.data_uom}` : 'n/a'
 
-        let zObj = alvinRealtimeAlvinCoordData[0].data_array.filter(data => data.data_name == "alvin_z")
-        alvin_z = (zObj.length > 0)? `${zObj[0].data_value} ${zObj[0].data_uom}` : 'n/a'
+        let zObj = alvinRealtimeAlvinCoordData.data_array.find(data => data.data_name == "alvin_z")
+        alvin_z = (zObj)? `${zObj.data_value} ${zObj.data_uom}` : 'n/a'
 
       }
     }
@@ -477,16 +491,16 @@ class LoweringReplay extends Component {
     let roll = 'n/a'
 
     if(this.props.event && this.props.event.selected_event.aux_data) {
-      let vehicleRealtimeNavData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
-      if(vehicleRealtimeNavData.length > 0) {
-        let hdgObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "heading")
-        hdg = (hdgObj.length > 0)? `${hdgObj[0].data_value} ${hdgObj[0].data_uom}` : 'n/a'
+      let vehicleRealtimeNavData = this.props.event.selected_event.aux_data.find(aux_data => aux_data.data_source == "vehicleRealtimeNavData")
+      if(vehicleRealtimeNavData) {
+        let hdgObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "heading")
+        hdg = (hdgObj)? `${hdgObj.data_value} ${hdgObj.data_uom}` : 'n/a'
 
-        let pitchObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "pitch")
-        pitch = (pitchObj.length > 0)? `${pitchObj[0].data_value} ${pitchObj[0].data_uom}` : 'n/a'
+        let pitchObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "pitch")
+        pitch = (pitchObj)? `${pitchObj.data_value} ${pitchObj.data_uom}` : 'n/a'
 
-        let rollObj = vehicleRealtimeNavData[0].data_array.filter(data => data.data_name == "roll")
-        roll = (rollObj.length > 0)? `${rollObj[0].data_value} ${rollObj[0].data_uom}` : 'n/a'
+        let rollObj = vehicleRealtimeNavData.data_array.find(data => data.data_name == "roll")
+        roll = (rollObj)? `${rollObj.data_value} ${rollObj.data_uom}` : 'n/a'
 
       }
     }  
@@ -510,23 +524,22 @@ class LoweringReplay extends Component {
     let temp_probe = 'n/a'
 
     if(this.props.event && this.props.event.selected_event.aux_data) {
-      let vehicleCTDData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == "vehicleCTDData")
-      if(vehicleCTDData.length > 0) {
-        let ctd_cObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_c")
-        ctd_c = (ctd_cObj.length > 0)? `${ctd_cObj[0].data_value} ${ctd_cObj[0].data_uom}` : 'n/a'
+      let vehicleCTDData = this.props.event.selected_event.aux_data.find(aux_data => aux_data.data_source == "vehicleRealtimeCTDData")
+      if(vehicleCTDData) {
+        let ctd_cObj = vehicleCTDData.data_array.find(data => data.data_name == "ctd_c")
+        ctd_c = (ctd_cObj)? `${ctd_cObj.data_value} ${ctd_cObj.data_uom}` : 'n/a'
 
-        let ctd_tObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_t")
-        ctd_t = (ctd_tObj.length > 0)? `${ctd_tObj[0].data_value} ${ctd_tObj[0].data_uom}` : 'n/a'
+        let ctd_tObj = vehicleCTDData.data_array.find(data => data.data_name == "ctd_t")
+        ctd_t = (ctd_tObj)? `${ctd_tObj.data_value} ${ctd_tObj.data_uom}` : 'n/a'
 
-        let ctd_dObj = vehicleCTDData[0].data_array.filter(data => data.data_name == "ctd_d")
-        ctd_d = (ctd_dObj.length > 0)? `${ctd_dObj[0].data_value} ${ctd_dObj[0].data_uom}` : 'n/a'
-
+        let ctd_dObj = vehicleCTDData.data_array.find(data => data.data_name == "ctd_d")
+        ctd_d = (ctd_dObj)? `${ctd_dObj.data_value} ${ctd_dObj.data_uom}` : 'n/a'
       }
 
-      let vehicleTempProbeData = this.props.event.selected_event.aux_data.filter(aux_data => aux_data.data_source == "vehicleTempProbeData")
-      if(vehicleTempProbeData.length > 0) {
-        let temp_probeObj = vehicleTempProbeData[0].data_array.filter(data => data.data_name == "ctd_c")
-        temp_probe = (temp_probeObj.length > 0)? `${temp_probeObj[0].data_value} ${temp_probeObj[0].data_uom}` : 'n/a'
+      let vehicleTempProbeData = this.props.event.selected_event.aux_data.find(aux_data => aux_data.data_source == "vehicleRealtimeTempProbeData")
+      if(vehicleTempProbeData) {
+        let temp_probeObj = vehicleTempProbeData.data_array.find(data => data.data_name == "ctd_c")
+        temp_probe = (temp_probeObj)? `${temp_probeObj.data_value} ${temp_probeObj.data_uom}` : 'n/a'
       }
     }  
 
@@ -573,7 +586,6 @@ class LoweringReplay extends Component {
       let loweringStartTime = moment(this.props.lowering.start_ts)
       let loweringEndTime = moment(this.props.lowering.stop_ts)
 
-      let replayOffset = (this.props.event.selected_event.ts)? moment(this.props.event.selected_event.ts).diff(loweringStartTime) : 0
       let loweringDuration = loweringEndTime.diff(loweringStartTime)
       
       let playPause = (this.state.replayState != 1)? <Link key={`pause_${this.props.lowering.id}`} to="#" onClick={ () => this.handleLoweringReplayPause() }><FontAwesomeIcon icon="pause"/>{' '}</Link> : <Link key={`play_${this.props.lowering.id}`} to="#" onClick={ () => this.handleLoweringReplayPlay() }><FontAwesomeIcon icon="play"/>{' '}</Link>;
@@ -596,32 +608,31 @@ class LoweringReplay extends Component {
         </div>
       )
 
-
-//            tipFormatter={this.sliderTooltipFormatter}
       return (
         <Panel>
           <Panel.Body>
-            <Slider
-              tipProps={{ overlayClassName: 'foo' }}
-              trackStyle={{ opacity: 0.5 }}
-              railStyle={{ opacity: 0.5 }}
-              onAfterChange={this.handleSliderChange}
-              max={this.props.event.events.length-1}
-            />
             <Row>
               <Col xs={4}>
-                  00:00:00
+                <span className="text-primary">00:00:00</span>
               </Col>
               <Col xs={4}>
                   {buttons}
               </Col>
               <Col xs={4}>
                 <div className="pull-right">
-                  {moment.duration(loweringDuration).format("d [days] hh:mm:ss")}
+                  <span className="text-primary">{moment.duration(loweringDuration).format("d [days] hh:mm:ss")}</span>
                 </div>
               </Col>
             </Row>
-            <Line percent={(this.props.event.fetching)? 0 : 100 * replayOffset / loweringDuration} strokeWidth={"1"} />
+            <SliderWithTooltip
+              value={this.state.replayEventIndex}
+              tipFormatter={this.sliderTooltipFormatter}
+              trackStyle={{ opacity: 0.5 }}
+              railStyle={{ opacity: 0.5 }}
+              onBeforeChange={this.handleLoweringReplayPause}
+              onChange={this.handleSliderChange}
+              max={this.props.event.events.length-1}
+            />
           </Panel.Body>
         </Panel>
       );
@@ -658,16 +669,6 @@ class LoweringReplay extends Component {
   }
 
   renderEventPanel() {
-
-    if (!this.props.event.events) {
-      return (
-        <Panel>
-          <Panel.Heading>{ this.renderEventListHeader() }</Panel.Heading>
-          <Panel.Body>Loading...</Panel.Body>
-        </Panel>
-      )
-    }
-
     return (
       <Panel>
         <Panel.Heading>{ this.renderEventListHeader() }</Panel.Heading>
@@ -703,7 +704,7 @@ class LoweringReplay extends Component {
           let active = (this.props.event.selected_event.id == event.id)? true : false
 
           let eventOptions = (eventOptionsArray.length > 0)? '--> ' + eventOptionsArray.join(', '): ''
-          let commentIcon = (comment_exists)? <FontAwesomeIcon onClick={() => this.handleEventCommentModal(i)} icon='comment' fixedWidth transform="grow-4"/> : <span onClick={() => this.handleEventCommentModal(i)} className="fa-layers fa-fw"><FontAwesomeIcon icon='comment' fixedWidth transform="grow-4"/><FontAwesomeIcon icon='plus' fixedWidth inverse transform="shrink-4"/></span>
+          let commentIcon = (comment_exists)? <FontAwesomeIcon onClick={() => this.handleEventCommentModal(index)} icon='comment' fixedWidth transform="grow-4"/> : <span onClick={() => this.handleEventCommentModal(index)} className="fa-layers fa-fw"><FontAwesomeIcon icon='comment' fixedWidth transform="grow-4"/><FontAwesomeIcon icon='plus' fixedWidth inverse transform="shrink-4"/></span>
           let commentTooltip = (comment_exists)? (<OverlayTrigger placement="top" overlay={<Tooltip id={`commentTooltip_${event.id}`}>Edit/View Comment</Tooltip>}>{commentIcon}</OverlayTrigger>) : (<OverlayTrigger placement="top" overlay={<Tooltip id={`commentTooltip_${event.id}`}>Add Comment</Tooltip>}>{commentIcon}</OverlayTrigger>)
 
           // eventArray.push(<ListGroupItem key={event.id}><Row><Col xs={11} onClick={() => this.handleEventShowDetailsModal(event)}>{event.ts} {`<${event.event_author}>`}: {event.event_value} {eventOptions}</Col><Col>{deleteTooltip} {commentTooltip} {seatubeTooltip} {youtubeTooltip} </Col></Row></ListGroupItem>);
@@ -715,7 +716,7 @@ class LoweringReplay extends Component {
       return eventList
     }
 
-    return (<ListGroupItem>No events found</ListGroupItem>)
+    return (this.props.event.fetching)? (<ListGroupItem>Loading...</ListGroupItem>) : (<ListGroupItem>No events found</ListGroupItem>)
   }
 
   renderPagination() {
@@ -774,6 +775,20 @@ class LoweringReplay extends Component {
   //   win.focus();
   // }
 
+  renderMap() {
+
+    return (
+      <Panel id="MapPanel" style={{backgroundColor: "#282828"}}>
+        <Panel.Body style={{padding: "4px", marginBottom: "10px"}}>
+          <div ref={ (mapPanel) => this.mapPanel = mapPanel} className="embed-responsive embed-responsive-16by9">
+            <LoweringReplayMap height={this.state.mapHeight} event={this.props.event.selected_event}/>
+          </div>
+          <div style={{marginTop: "8px", marginLeft: "10px"}}>Map</div>
+        </Panel.Body>
+      </Panel>
+    )
+  }
+
   render(){
 
     let cruise_id = (this.props.cruise.cruise_id)? this.props.cruise.cruise_id : "Loading..."
@@ -784,19 +799,20 @@ class LoweringReplay extends Component {
         <EventCommentModal />
         <Row>
           <Col lg={12}>
-            <div>
-              <Well bsSize="small">
-                {`${cruise_id} / ${lowering_id} / Replay`}{' '}
-                <span className="pull-right">
-                  <LinkContainer to={ `/lowering_review/${this.props.match.params.id}` }><Button disabled={this.props.event.fetching} bsSize={'xs'}>Goto Review</Button></LinkContainer>
-                </span>
-              </Well>
-            </div>
+            <Well bsSize="small">
+              <span className="text-warning">{cruise_id}</span> / <span className="text-warning">{lowering_id}</span> / <span className="text-primary">Replay</span>{' '}
+              <span className="pull-right">
+                <LinkContainer to={ `/lowering_review/${this.props.match.params.id}` }><Button disabled={this.props.event.fetching} bsSize={'xs'} bsStyle={'primary'}>Goto Review</Button></LinkContainer>
+              </span>
+            </Well>
           </Col>
         </Row>
         <Row>
-          <Col sm={12}>
+          <Col sm={8} md={8} lg={8}>
             {this.renderImageryPanel()}
+          </Col>
+          <Col sm={4} md={4} lg={4}>
+            {this.renderMap()}
           </Col>
         </Row>
         <Row>
