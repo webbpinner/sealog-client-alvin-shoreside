@@ -24,6 +24,7 @@ class LoweringModeDropdownToggle extends Component {
     return (
       <span className="text-primary" onClick={this.handleClick} onBlur={this.handleClick}>
         {this.props.children}
+        <span className="caret"></span>
       </span>
     );
   }
