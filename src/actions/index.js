@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import queryString from 'querystring';
 import { push } from 'connected-react-router';
@@ -229,7 +229,7 @@ export function gotoLoweringReplay(id) {
   }
 }
 
-export function gotoLoweringSearch(id) {
+export function gotoLoweringReview(id) {
 
   return function (dispatch) {
     dispatch(initLowering(id))

@@ -82,7 +82,7 @@ class CruiseMenu extends Component {
       // this.props.initLowering(id)
       this.setState({activeLowering: this.props.lowerings.find(lowering => lowering.id === id)});
     } else {
-      // this.props.clearSelectedLowering()
+      this.props.clearSelectedLowering()
       this.setState({activeLowering: null});
     }
   }
@@ -94,10 +94,10 @@ class CruiseMenu extends Component {
     }
   }
 
-  handleLoweringSelectForSearch() {
+  handleLoweringSelectForReview() {
     if(this.state.activeLowering) {
       this.props.clearEvents()
-      this.props.gotoLoweringSearch(this.state.activeLowering.id);
+      this.props.gotoLoweringReview(this.state.activeLowering.id);
     }
   }
 

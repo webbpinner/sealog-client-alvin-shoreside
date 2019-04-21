@@ -7,13 +7,15 @@ import Cookies from 'universal-cookie';
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
-import { Button, Row, Col, Grid, Panel, Accordion, Pagination, ListGroup, ListGroupItem, MenuItem, Thumbnail, Well, OverlayTrigger, Tooltip, ButtonToolbar, DropdownButton } from 'react-bootstrap';
+import { Button, Row, Col, Dropdown, Grid, Panel, Accordion, Pagination, ListGroup, ListGroupItem, MenuItem, Thumbnail, Well, OverlayTrigger, Tooltip, ButtonToolbar, DropdownButton } from 'react-bootstrap';
 import 'rc-slider/assets/index.css';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import EventFilterForm from './event_filter_form';
 import ImagePreviewModal from './image_preview_modal';
 import EventCommentModal from './event_comment_modal';
 import LoweringReplayMap from './lowering_replay_map';
+import LoweringDropdown from './lowering_dropdown';
+import LoweringModeDropdown from './lowering_mode_dropdown';
 import * as actions from '../actions';
 import { ROOT_PATH, API_ROOT_URL, IMAGE_PATH } from '../client_config';
 
@@ -60,6 +62,8 @@ class LoweringReplay extends Component {
     this.handleLoweringReplayPause = this.handleLoweringReplayPause.bind(this);
     this.replayReverse = this.replayReverse.bind(this);
     this.updateEventFilter = this.updateEventFilter.bind(this)
+    this.handleLoweringSelect = this.handleLoweringSelect.bind(this)
+    this.handleLoweringModeSelect = this.handleLoweringModeSelect.bind(this)
 
   }
 
@@ -280,6 +284,22 @@ class LoweringReplay extends Component {
     this.handleLoweringReplayPause();
     this.setState({activePage: eventKey, replayEventIndex: (eventKey-1)*maxEventsPerPage });
     this.props.advanceLoweringReplayTo(this.props.event.events[(eventKey-1)*maxEventsPerPage].id)
+  }
+
+  handleLoweringSelect(id) {
+    this.props.gotoLoweringReplay(id)
+    this.props.initLoweringReplay(id, this.state.hideASNAP);
+    this.props.initCruiseFromLowering(id);
+  }
+
+  handleLoweringModeSelect(mode) {
+    if(mode === "Review") {
+      this.props.gotoLoweringReview(this.props.match.params.id)
+    } else if (mode === "Gallery") {
+      this.props.gotoLoweringGallery(this.props.match.params.id)
+    } else if (mode === "Replay") {
+      this.props.gotoLoweringReplay(this.props.match.params.id)
+    }
   }
 
   renderImage(source, filepath) {
@@ -791,20 +811,31 @@ class LoweringReplay extends Component {
 
   render(){
 
-    let cruise_id = (this.props.cruise.cruise_id)? this.props.cruise.cruise_id : "Loading..."
-    let lowering_id = (this.props.lowering.lowering_id)? this.props.lowering.lowering_id : "Loading..."
+    const cruise_id = (this.props.cruise.cruise_id)? this.props.cruise.cruise_id : "Loading..."
+    const lowering_id = (this.props.lowering.lowering_id)? this.props.lowering.lowering_id : "Loading..."
+
+    let gotoDropdown = (
+      <DropdownButton id="dropdown-item-button" title="Replay">
+        <MenuItem eventKey={1} >Review</MenuItem>
+        <MenuItem eventKey={2} >Gallery</MenuItem>
+      </DropdownButton>
+    )
+
     return (
       <div>
         <ImagePreviewModal />
         <EventCommentModal />
         <Row>
           <Col lg={12}>
-            <Well bsSize="small">
-              <span className="text-warning">{cruise_id}</span> / <span className="text-warning">{lowering_id}</span> / <span className="text-primary">Replay</span>{' '}
-              <span className="pull-right">
-                <LinkContainer to={ `/lowering_review/${this.props.match.params.id}` }><Button disabled={this.props.event.fetching} bsSize={'xs'} bsStyle={'primary'}>Goto Review</Button></LinkContainer>
-              </span>
-            </Well>
+            <div style={{paddingBottom: "10px", paddingLeft: "10px"}}>
+              <LinkContainer to={ `/` }>
+                <span className="text-warning">{cruise_id}</span>
+              </LinkContainer>
+              {' '}/{' '}
+              <LoweringDropdown onClick={this.handleLoweringSelect} active_cruise={this.props.cruise} active_lowering={this.props.lowering}/>
+              {' '}/{' '}
+              <LoweringModeDropdown onClick={this.handleLoweringModeSelect} active_mode={"Replay"} modes={["Review", "Gallery"]}/>
+            </div>
           </Col>
         </Row>
         <Row>

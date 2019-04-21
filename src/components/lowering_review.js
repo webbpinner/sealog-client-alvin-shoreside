@@ -10,6 +10,8 @@ import axios from 'axios';
 import EventFilterForm from './event_filter_form';
 import EventCommentModal from './event_comment_modal';
 import EventShowDetailsModal from './event_show_details_modal';
+import LoweringDropdown from './lowering_dropdown';
+import LoweringModeDropdown from './lowering_mode_dropdown';
 import * as actions from '../actions';
 import { ROOT_PATH, API_ROOT_URL } from '../client_config';
 
@@ -33,6 +35,9 @@ class LoweringSearch extends Component {
     this.handleEventUpdate = this.handleEventUpdate.bind(this);
     this.handlePageSelect = this.handlePageSelect.bind(this);
     this.updateEventFilter = this.updateEventFilter.bind(this)
+    this.handleLoweringSelect = this.handleLoweringSelect.bind(this)
+    this.handleLoweringModeSelect = this.handleLoweringModeSelect.bind(this)
+
   }
 
   componentDidMount() {
@@ -75,6 +80,22 @@ class LoweringSearch extends Component {
 
   handleEventShowDetailsModal(event) {
     this.props.showModal('eventShowDetails', { event_id: event.id, handleUpdateEvent: this.props.updateEvent });
+  }
+
+  handleLoweringSelect(id) {
+    this.props.gotoLoweringReview(id)
+    this.props.initLoweringReplay(id, this.state.hideASNAP);
+    this.props.initCruiseFromLowering(id);
+  }
+
+  handleLoweringModeSelect(mode) {
+    if(mode === "Review") {
+      this.props.gotoLoweringReview(this.props.match.params.id)
+    } else if (mode === "Gallery") {
+      this.props.gotoLoweringGallery(this.props.match.params.id)
+    } else if (mode === "Replay") {
+      this.props.gotoLoweringReplay(this.props.match.params.id)
+    }
   }
 
   fetchEventAuxData() {
@@ -362,13 +383,14 @@ class LoweringSearch extends Component {
         <EventShowDetailsModal />
         <Row>
           <Col lg={12}>
-            <div>
-              <Well bsSize="small">
-                <span className="text-warning">{cruise_id}</span> / <span className="text-warning">{lowering_id}</span> / <span className="text-primary">Review</span>{' '}
-                <span className="pull-right">
-                  <LinkContainer to={ `/lowering_replay/${this.props.match.params.id}` }><Button disabled={this.props.event.fetching} bsSize={'xs'} bsStyle={'primary'}>Goto Replay</Button></LinkContainer>
-                </span>
-              </Well>
+            <div style={{paddingBottom: "10px", paddingLeft: "10px"}}>
+              <LinkContainer to={ `/` }>
+                <span className="text-warning">{cruise_id}</span>
+              </LinkContainer>
+              {' '}/{' '}
+              <LoweringDropdown onClick={this.handleLoweringSelect} active_cruise={this.props.cruise} active_lowering={this.props.lowering}/>
+              {' '}/{' '}
+              <LoweringModeDropdown onClick={this.handleLoweringModeSelect} active_mode={"Review"} modes={["Replay", "Gallery"]}/>
             </div>
           </Col>
         </Row>
