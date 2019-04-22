@@ -637,8 +637,21 @@ export function showCruise(id) {
 
   let fields = { id: id, cruise_hidden: false }
 
-  return function (dispatch) {
-    dispatch(updateCruise(fields));
+  return async function (dispatch) {
+    await axios.patch(`${API_ROOT_URL}/api/v1/cruises/${id}`,
+      fields,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    ).then((response) => {
+      dispatch(fetchCruises());
+      dispatch(updateCruiseSuccess('Cruise updated'));
+    }).catch((error) => {
+      console.log(error)
+      dispatch(updateCruiseError(error.response.data.message));
+    });
   }
 }
 
@@ -646,8 +659,21 @@ export function hideCruise(id) {
 
   let fields = { id: id, cruise_hidden: true }
 
-  return function (dispatch) {
-    dispatch(updateCruise(fields));
+  return async function (dispatch) {
+    await axios.patch(`${API_ROOT_URL}/api/v1/cruises/${id}`,
+      fields,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    ).then((response) => {
+      dispatch(fetchCruises());
+      dispatch(updateCruiseSuccess('Cruise updated'));
+    }).catch((error) => {
+      console.log(error)
+      dispatch(updateCruiseError(error.response.data.message));
+    });
   }
 }
 
@@ -713,21 +739,47 @@ export function updateCruise(formProps) {
   }
 }
 
-export function showLowering(id) {
-
-  let fields = { id: id, lowering_hidden: false }
-
-  return function (dispatch) {
-    dispatch(updateLowering(fields));
-  }
-}
-
 export function hideLowering(id) {
 
   let fields = { id: id, lowering_hidden: true }
 
-  return function (dispatch) {
-    dispatch(updateLowering(fields));
+  return async function (dispatch) {
+    await axios.patch(`${API_ROOT_URL}/api/v1/lowerings/${id}`,
+      fields,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    ).then((response) => {
+      dispatch(fetchLowerings());
+      dispatch(updateLoweringSuccess('Lowering updated'));
+    }).catch((error) => {
+      console.log(error)
+      dispatch(updateLoweringError(error.response.data.message));
+    });
+  }
+}
+
+export function showLowering(id) {
+
+  let fields = { id: id, lowering_hidden: false }
+
+  return async function (dispatch) {
+    await axios.patch(`${API_ROOT_URL}/api/v1/lowerings/${id}`,
+      fields,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    ).then((response) => {
+      dispatch(fetchLowerings());
+      dispatch(updateLoweringSuccess('Lowering updated'));
+    }).catch((error) => {
+      console.log(error)
+      dispatch(updateLoweringError(error.response.data.message));
+    });
   }
 }
 
