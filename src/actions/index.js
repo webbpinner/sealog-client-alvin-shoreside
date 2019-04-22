@@ -1000,9 +1000,9 @@ export function logout() {
   }
 }
 
-export function switch2Guest() {
+export function switch2Guest(reCaptcha) {
   return function(dispatch) {
-    dispatch(login( { username:"guest", password: "" } ) );
+    dispatch(login( { username:"guest", password: "guest", reCaptcha: reCaptcha } ) );
   }
 }
 

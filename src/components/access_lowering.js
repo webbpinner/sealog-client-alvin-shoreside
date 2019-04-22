@@ -30,7 +30,6 @@ class AccessLowering extends Component {
   }
 
   handleFormSubmit(formProps) {
-
     this.props.updateLowering({...formProps});
   }
 
@@ -80,6 +79,8 @@ class AccessLowering extends Component {
     let requiredField = (required)? (<span className='text-danger'> *</span>) : ''
     let checkboxList = options.map((option, index) => {
 
+    console.log("input:", input.value)
+    console.log("options:", options)
       return (
           <Checkbox
             name={`${option.label}[${index}]`}
@@ -103,7 +104,23 @@ class AccessLowering extends Component {
 
     return (
       <FormGroup>
-        <label>{label}{requiredField}</label><br/>
+        <label>{label}{requiredField}</label>
+          <Checkbox
+            name={`select_all`}
+            label={`Everyone`}
+            key={`select_all`}
+            checked={input.value.length == options.length}
+            onChange={event => {
+              const newValue = [...input.value];
+              if(event.target.checked) {
+                return input.onChange(options.map(option => option.value));
+              } else {
+                return input.onChange([]);
+              }
+            }}
+          > 
+            {`Everyone`}
+          </Checkbox>
         {checkboxList}
         {dirty && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
       </FormGroup>

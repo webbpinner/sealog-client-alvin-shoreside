@@ -184,7 +184,7 @@ class CruiseMenu extends Component {
             </p>
             {loweringFiles}
             <Button bsSize={'xs'} bsStyle={'primary'} onClick={ () => this.handleLoweringSelectForReplay(this.state.activeLowering.id) }>Goto replay...</Button>
-            <Button bsSize={'xs'} bsStyle={'primary'} onClick={ () => this.handleLoweringSelectForSearch(this.state.activeLowering.id) }>Goto review...</Button>
+            <Button bsSize={'xs'} bsStyle={'primary'} onClick={ () => this.handleLoweringSelectForReview(this.state.activeLowering.id) }>Goto review...</Button>
             <Button bsSize={'xs'} bsStyle={'primary'} onClick={ () => this.handleLoweringSelectForGallery(this.state.activeLowering.id) }>Goto gallery...</Button>
           </Panel.Body>
         </Panel>
