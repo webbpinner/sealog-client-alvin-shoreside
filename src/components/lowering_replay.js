@@ -799,7 +799,7 @@ class LoweringReplay extends Component {
 
   renderMap() {
 
-    const mapRatio = (new Date(this.props.cruise.start_ts) <= new Date("2009-12-31"))? "embed-responsive-4by3" : "embed-responsive-16by9"
+    const mapRatio = (new Date(this.props.cruise.start_ts) <= new Date("2013-12-31"))? "embed-responsive-4by3" : "embed-responsive-16by9"
 
     return (
       <Panel id="MapPanel" style={{backgroundColor: "#282828"}}>
