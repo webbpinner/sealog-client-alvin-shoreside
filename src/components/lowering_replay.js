@@ -799,10 +799,12 @@ class LoweringReplay extends Component {
 
   renderMap() {
 
+    const mapRatio = (new Date(this.props.cruise.start_ts) <= new Date("2009-12-31"))? "embed-responsive-4by3" : "embed-responsive-16by9"
+
     return (
       <Panel id="MapPanel" style={{backgroundColor: "#282828"}}>
         <Panel.Body style={{padding: "4px", marginBottom: "10px"}}>
-          <div ref={ (mapPanel) => this.mapPanel = mapPanel} className="embed-responsive embed-responsive-16by9">
+          <div ref={ (mapPanel) => this.mapPanel = mapPanel} className={`embed-responsive ${mapRatio}`}>
             <LoweringReplayMap height={this.state.mapHeight} event={this.props.event.selected_event}/>
           </div>
           <div style={{marginTop: "8px", marginLeft: "10px"}}>Map</div>
