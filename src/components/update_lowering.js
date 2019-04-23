@@ -254,10 +254,6 @@ class UpdateLowering extends Component {
           <Panel.Body>
             <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
               <Field
-                name="lowering_additional_meta"
-                component={this.renderHiddenField}
-              />
-              <Field
                 name="lowering_id"
                 component={this.renderField}
                 type="text"
@@ -342,6 +338,10 @@ class UpdateLowering extends Component {
                 <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
                 <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Update</Button>
               </div>
+              <Field
+                name="lowering_additional_meta"
+                component={this.renderHiddenField}
+              />
             </form>
           </Panel.Body>
         </Panel>
