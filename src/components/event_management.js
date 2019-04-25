@@ -41,7 +41,7 @@ class EventManagement extends Component {
     this.updateEventFilter = this.updateEventFilter.bind(this);
   }
 
-  componentWillMount(){
+  componentDidMount(){
     if(!this.state.events){
       this.fetchEventsForDisplay()
     }
@@ -196,7 +196,7 @@ class EventManagement extends Component {
     let freetext = (eventFilter.freetext)? `&freetext=${eventFilter.freetext}` : ''
     let datasource = (eventFilter.datasource)? `&datasource=${eventFilter.datasource}` : ''
 
-    return axios.get(`${API_ROOT_URL}/api/v1/event_exports/?${format}${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
+    return axios.get(`${API_ROOT_URL}/api/v1/event_exports?${format}${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
       {
         headers: {
           authorization: cookies.get('token')
@@ -321,7 +321,7 @@ class EventManagement extends Component {
           let commentIcon = (comment_exists)? <FontAwesomeIcon onClick={() => this.handleEventCommentModal(event)} icon='comment' fixedWidth transform="grow-4"/> : <span onClick={() => this.handleEventCommentModal(event)} className="fa-layers fa-fw"><FontAwesomeIcon icon='comment' fixedWidth transform="grow-4"/><FontAwesomeIcon icon='plus' fixedWidth inverse transform="shrink-4"/></span>
           let commentTooltip = (comment_exists)? (<OverlayTrigger placement="top" overlay={<Tooltip id={`commentTooltip_${event.id}`}>Edit/View Comment</Tooltip>}>{commentIcon}</OverlayTrigger>) : (<OverlayTrigger placement="top" overlay={<Tooltip id={`commentTooltip_${event.id}`}>Add Comment</Tooltip>}>{commentIcon}</OverlayTrigger>)
           let eventComment = (this.props.roles.includes("event_logger") || this.props.roles.includes("admin"))? commentTooltip : null
-          
+
           let deleteIcon = <FontAwesomeIcon className={"text-danger"} onClick={() => this.handleEventDeleteModal(event)} icon='trash' fixedWidth/>
           let deleteTooltip = (this.props.roles && this.props.roles.includes("admin"))? (<OverlayTrigger placement="top" overlay={<Tooltip id={`deleteTooltip_${event.id}`}>Delete this event</Tooltip>}>{deleteIcon}</OverlayTrigger>): null
 
@@ -399,8 +399,6 @@ class EventManagement extends Component {
   }
 
   render(){
-
-    // console.log(this.props.event.eventFilter)
 
     return (
       <div>

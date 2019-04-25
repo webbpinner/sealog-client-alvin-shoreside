@@ -117,7 +117,7 @@ class CruiseMenu extends Component {
       responseType: 'arraybuffer'
     })
     .then((response) => {
-      
+
         FileDownload(response.data, filename);
      })
     .catch((error)=>{

@@ -1,5 +1,4 @@
 import axios from 'axios';
-// import { Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import queryString from 'querystring';
 import { push } from 'connected-react-router';
@@ -319,23 +318,8 @@ export function updateEvent(eventValue, eventFreeText = '', eventOptions = [], e
   }
 }
 
-// export async function updateLoweringReplayEvent(event_id) {
-//   console.log("event_id:", event_id)
-//   const response = await axios.get(API_ROOT_URL + '/api/v1/events/' + event_id, {
-//     headers: {
-//       authorization: cookies.get('token')
-//     },
-//   });
-
-//   return async dispatch => {
-//     try {
-//         dispatch({type: UPDATE_EVENT, payload: data})
-//     } catch(e) {
-//       console.log(e);
-//     }
-//   }
-// }
 export function updateLoweringReplayEvent(event_id) {
+
   const request = axios.get(API_ROOT_URL + '/api/v1/events/' + event_id, {
     headers: {
       authorization: cookies.get('token')
@@ -1452,7 +1436,6 @@ export function fetchEventHistory(asnap = false) {
     });
   }
 }
-
 
 export function fetchEventTemplates() {
 

@@ -18,7 +18,6 @@ import * as actions from '../actions';
 
 const dateFormat = "YYYY-MM-DD"
 
-
 const CRUISE_ROUTE = "/files/cruises";
 
 const cookies = new Cookies();
@@ -276,7 +275,7 @@ class UpdateCruise extends Component {
                 component={this.renderTextArea}
                 type="textarea"
                 label="Cruise Description"
-                placeholder="A brief summary of the cruise"
+                placeholder="i.e. A brief summary of the cruise"
                 rows={10}
               />
               <Field
@@ -284,7 +283,7 @@ class UpdateCruise extends Component {
                 type="text"
                 component={this.renderField}
                 label="Cruise Location"
-                placeholder="i.e. Lost City"
+                placeholder="i.e. Mid-Atlantic Ridge"
               />
               <Field
                 name="start_ts"
@@ -313,14 +312,14 @@ class UpdateCruise extends Component {
                 component={this.renderTextArea}
                 type="textarea"
                 label="Cruise Participants, comma delimited"
-                placeholder="A comma-delimited list of names, i.e. Dave Butterfield,Sharon Walker"
+                placeholder="i.e. Dave Butterfield,Sharon Walker"
               />
               <Field
                 name="cruise_tags"
                 component={this.renderTextArea}
                 type="textarea"
                 label="Cruise Tags, comma delimited"
-                placeholder="A comma-delimited list of tags, i.e. coral,chemistry,engineering"
+                placeholder="i.e. coral,chemistry,engineering"
               />
               <Field
                 name="cruise_linkToR2R"

@@ -266,7 +266,7 @@ class UpdateLowering extends Component {
                 component={this.renderTextArea}
                 type="textarea"
                 label="Lowering Description"
-                placeholder="A brief description of the lowering"
+                placeholder="i.e. A brief description of the lowering"
                 rows={10}
               />
               <Field
@@ -421,8 +421,6 @@ function mapStateToProps(state) {
 
     // delete initialValues.lowering_additional_meta
   }
-
-  console.log(initialValues)
 
   return {
     errorMessage: state.lowering.lowering_error,
