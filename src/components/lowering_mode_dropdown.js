@@ -1,7 +1,7 @@
 // import { graphql } from 'gatsby';
 import React, { Component } from 'react';
 import { Dropdown, MenuItem } from 'react-bootstrap';
-import RootCloseWrapper from 'react-overlays/lib/RootCloseWrapper';
+import RootCloseWrapper from 'react-overlays/RootCloseWrapper';
 import PropTypes from 'prop-types';
 // import axios from 'axios';
 // import Cookies from 'universal-cookie';

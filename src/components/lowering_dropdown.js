@@ -86,10 +86,11 @@ class LoweringDropdown extends Component {
     onClick: PropTypes.func
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.getLowerings(this.props.active_cruise, this.props.onClick)
+  }
 
   componentDidUpdate() {
-
     if(this.state.cruise != this.props.active_cruise.id) {
       this.getLowerings(this.props.active_cruise, this.props.onClick)
     }
@@ -110,7 +111,7 @@ class LoweringDropdown extends Component {
       })
       
       const lowerings = await response.data;
-      this.setState({cruise, menuItems: lowerings.map((lowering, index) => (<MenuItem onClick={() => onClick(lowering.id)} key={lowering.id} style={this.menuItemStyle} eventKey={index}>{lowering.lowering_id}</MenuItem>))})
+      this.setState({cruise: cruise, menuItems: lowerings.map((lowering, index) => (<MenuItem onClick={() => onClick(lowering.id)} key={lowering.id} style={this.menuItemStyle} eventKey={index}>{lowering.lowering_id}</MenuItem>))})
     }
     catch(error){
       console.log(error)
