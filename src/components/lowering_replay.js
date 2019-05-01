@@ -71,10 +71,12 @@ class LoweringReplay extends Component {
 
     if(!this.props.lowering.id || this.props.lowering.id != this.props.match.params.id || this.props.event.events.length == 0) {
       this.props.initLoweringReplay(this.props.match.params.id, this.state.hideASNAP);
+      console.log("thing1")
     }
 
     if(!this.props.cruise.id || this.props.lowering.id != this.props.match.params.id){
       this.props.initCruiseFromLowering(this.props.match.params.id);
+      console.log("thing2")
     }
   }
 
@@ -290,6 +292,7 @@ class LoweringReplay extends Component {
     this.props.gotoLoweringReplay(id)
     this.props.initLoweringReplay(id, this.state.hideASNAP);
     this.props.initCruiseFromLowering(id);
+    this.setState({replayEventIndex: 0, activePage: 1})
   }
 
   handleLoweringModeSelect(mode) {
